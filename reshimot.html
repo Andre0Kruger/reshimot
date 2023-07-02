@@ -45,12 +45,10 @@
     }
 
     .ordem {
-        display: inline-block;
         float: left;
     }
 
     .menu {
-        display: inline-block;
         float: right;
     }
 
@@ -154,7 +152,7 @@
         <div id="base">
             <div class="cabecalho">
                 <div class="ordem">
-                    #1
+                    ?=ordem
                 </div>
                 <div class="menu">
                     ...
@@ -164,17 +162,17 @@
                 <img src="default.png" />
             </div>
             <div class="nome">
-                Soldado
+                ?=nome
             </div>
             <div class="numeros">
                 <div class="numero primeiro">
-                    50
+                    ?=primeiro
                 </div>
                 <div class="numero segundo">
-                    50
+                    ?=segundo
                 </div>
                 <div class="numero terceiro">
-                    50
+                    ?=terceiro
                 </div>
             </div>
         </div>
@@ -248,7 +246,6 @@
             let session = localStorage.getItem('sessao');
             if (session && session != "undefined") {
                 sessao = JSON.parse(session);
-                debugger;
                 render();
             } else {
                 create();
@@ -270,16 +267,13 @@
         }
 
         function render() {
+            let index = 0;
+
+            sessao.fichas.sort(compare);
+
             for (const ficha of sessao.fichas) {
-
-                let base = document.getElementById("base");
-                let novaFicha = document.createElement("div");
-
-                novaFicha.setAttribute("id", "ficha_" + ficha.id);
-                novaFicha.setAttribute("class", "ficha");
-                novaFicha.innerHTML = base.innerHTML;
-
-                updateFicha(novaFicha, ficha);
+                index++;
+                let novaFicha = updateFicha(ficha, index);
                 document.getElementById("add").before(novaFicha);
             }
         }
@@ -317,13 +311,24 @@
             removerFormulario();
         }
 
-        function updateFicha(novaFichaHTML, novaFicha) {
-            novaFichaHTML.getElementsByClassName("nome")[0].innerHTML = novaFicha.nome;
-            novaFichaHTML.getElementsByClassName("primeiro")[0].innerHTML = novaFicha.iniciativa;
-            novaFichaHTML.getElementsByClassName("segundo")[0].innerHTML = novaFicha.vida;
-            novaFichaHTML.getElementsByClassName("terceiro")[0].innerHTML = novaFicha.extra;
+        function updateFicha(ficha, index) {
 
+            let base = document.getElementById("base");
+            let novaFichaHTML = document.createElement("div");
 
+            novaFichaHTML.setAttribute("id", "ficha_" + ficha.id);
+            novaFichaHTML.setAttribute("class", "ficha");
+
+            let html = base.innerHTML;
+
+            html = html.replace("?=ordem", "#" + index);
+            html = html.replace("?=nome", ficha.nome);
+            html = html.replace("?=primeiro", ficha.iniciativa);
+            html = html.replace("?=segundo", ficha.vida);
+            html = html.replace("?=terceiro", ficha.extra);
+
+            novaFichaHTML.innerHTML = html;
+            return novaFichaHTML;
         }
 
         function obterDados() {
@@ -337,7 +342,23 @@
                 extra: formulario.getElementsByClassName("_extra")[0].value,
                 id: sessao.ultimaFicha + 1
             }
+
+
         }
+
+        function compare(a, b) {
+
+            if (parseInt(a.iniciativa) > parseInt(b.iniciativa)) {
+                return -1;
+            }
+
+            if (parseInt(a.iniciativa) < parseInt(b.iniciativa)) {
+                return 1;
+            }
+
+            return 0;
+        }
+
 
     </script>
 </body>
