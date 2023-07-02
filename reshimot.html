@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Reshimot</title>
+    <!-- reshimot é "anotação" em hebraico -->
+</head>
+
+<style>
+    * {
+        font-family: sans-serif;
+    }
+
+    .container {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    #fichas {
+        box-sizing: border-box;
+    }
+
+    .ficha {
+        width: 12%;
+        height: 190px;
+        padding: 10px;
+        border: 2px solid #777;
+        border-radius: 5px;
+        text-align: center;
+        box-sizing: border-box;
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 0.5% 10px 0;
+    }
+
+    #add {
+        cursor: pointer;
+        font-size: 150px;
+        color: #bbb;
+    }
+
+    .cabecalho {
+        height: 25px;
+    }
+
+    .ordem {
+        display: inline-block;
+        float: left;
+    }
+
+    .menu {
+        display: inline-block;
+        float: right;
+    }
+
+    .foto {
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+
+    .foto img {
+        border-radius: 100%;
+        border: 2px solid #777;
+        width: 64px;
+        height: 64px;
+    }
+
+    .nome {
+        font-weight: bolder;
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .numeros {}
+
+    .numero {
+        border-radius: 50px;
+        background-color: aquamarine;
+        padding: 5px;
+        display: inline-block;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    body {
+        box-sizing: border-box;
+    }
+
+    .popup {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .popup .interno {
+        border-radius: 5px;
+        background-color: #fff;
+        padding: 25px;
+        display: inline-block;
+        margin-top: 25px;
+    }
+
+    .popup .grupo {
+        text-align: left;
+    }
+
+    .popup .grupo label {
+        display: block;
+        font-size: 12px;
+    }
+
+    .popup .grupo input {
+        margin-bottom: 10px;
+        width: 100%;
+        outline: none;
+    }
+
+    .popup .botoes {
+        margin-top: 20px;
+    }
+
+    .popup .botoes button {
+        border: none;
+        outline: none;
+        background-color: #777;
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-weight: bold;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .popup .botoes .confirmar {
+        background-color: #166e22;
+    }
+
+    .popup .botoes .cancelar {
+        background-color: #6e1616;
+    }
+</style>
+
+<body>
+
+    <div class="components hidden">
+        <div id="base">
+            <div class="cabecalho">
+                <div class="ordem">
+                    #1
+                </div>
+                <div class="menu">
+                    ...
+                </div>
+            </div>
+            <div class="foto">
+                <img src="default.png" />
+            </div>
+            <div class="nome">
+                Soldado
+            </div>
+            <div class="numeros">
+                <div class="numero primeiro">
+                    50
+                </div>
+                <div class="numero segundo">
+                    50
+                </div>
+                <div class="numero terceiro">
+                    50
+                </div>
+            </div>
+        </div>
+
+        <div id="popup">
+            <div class="interno">
+
+                <h2>Preencha a ficha:</h2>
+
+                <div class="grupo">
+                    <label>Nome:</label>
+                    <input type="text" class="_nome" />
+                </div>
+
+                <div class="grupo">
+                    <label>Iniciativa:</label>
+                    <input type="text" class="_iniciativa" />
+                </div>
+
+                <div class="grupo">
+                    <label>Vida:</label>
+                    <input type="text" class="_vida" />
+                </div>
+
+                <div class="grupo">
+                    <label>Extra:</label>
+                    <input type="text" class="_extra" />
+                </div>
+
+                <div class="botoes">
+                    <button onclick="confirmar()" class="confirmar">Confirmar</button>
+                    <button onclick="removerFormulario()" class="cancelar">Cancelar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+    <div class="container">
+        <div id="fichas">
+            <div class="ficha" id="add" onclick="add()">
+                +
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        // localStorage.setItem('sessao', undefined);
+
+        var sessao;
+
+        load();
+
+        function create() {
+            sessao = {
+                ultimaFicha: 0,
+                fichas: []
+            }
+        }
+
+        function save() {
+            localStorage.setItem('sessao', JSON.stringify(sessao));
+        }
+
+        function load() {
+            let session = localStorage.getItem('sessao');
+            if (session && session != "undefined") {
+                sessao = JSON.parse(session);
+                debugger;
+                render();
+            } else {
+                create();
+            }
+        }
+
+        function add() {
+            let base = document.getElementById("base");
+
+            let novaFicha = document.createElement("div");
+            let numeroFicha = sessao.ultimaFicha;
+
+            novaFicha.setAttribute("id", "ficha_" + numeroFicha);
+            novaFicha.setAttribute("class", "ficha");
+            novaFicha.innerHTML = base.innerHTML;
+
+            sessao.novaFichaHTML = novaFicha;
+            abrirFormulario();
+        }
+
+        function render() {
+            for (const ficha of sessao.fichas) {
+
+                let base = document.getElementById("base");
+                let novaFicha = document.createElement("div");
+
+                novaFicha.setAttribute("id", "ficha_" + ficha.id);
+                novaFicha.setAttribute("class", "ficha");
+                novaFicha.innerHTML = base.innerHTML;
+
+                updateFicha(novaFicha, ficha);
+                document.getElementById("add").before(novaFicha);
+            }
+        }
+
+        function abrirFormulario() {
+
+            let base = document.getElementById("popup");
+            let novoPopup = document.createElement("div");
+
+            novoPopup.innerHTML = base.innerHTML;
+            novoPopup.setAttribute("class", "popup");
+            novoPopup.setAttribute("id", "fichaForm");
+
+            document.body.append(novoPopup);
+        }
+
+        function removerFormulario() {
+            document.getElementById("fichaForm").remove();
+
+            sessao.novaFichaHTML = undefined;
+            sessao.novaFicha = undefined;
+        }
+
+        function confirmar() {
+            let novaFichaHTML = sessao.novaFichaHTML;
+            let novaFicha = obterDados();
+
+            updateFicha(novaFichaHTML, novaFicha);
+
+            document.getElementById("add").before(novaFichaHTML);
+            sessao.fichas.push(novaFicha);
+            sessao.ultimaFicha++;
+            save();
+
+            removerFormulario();
+        }
+
+        function updateFicha(novaFichaHTML, novaFicha) {
+            novaFichaHTML.getElementsByClassName("nome")[0].innerHTML = novaFicha.nome;
+            novaFichaHTML.getElementsByClassName("primeiro")[0].innerHTML = novaFicha.iniciativa;
+            novaFichaHTML.getElementsByClassName("segundo")[0].innerHTML = novaFicha.vida;
+            novaFichaHTML.getElementsByClassName("terceiro")[0].innerHTML = novaFicha.extra;
+
+
+        }
+
+        function obterDados() {
+
+            let formulario = document.getElementById("fichaForm");
+
+            return {
+                nome: formulario.getElementsByClassName("_nome")[0].value,
+                iniciativa: formulario.getElementsByClassName("_iniciativa")[0].value,
+                vida: formulario.getElementsByClassName("_vida")[0].value,
+                extra: formulario.getElementsByClassName("_extra")[0].value,
+                id: sessao.ultimaFicha + 1
+            }
+        }
+
+    </script>
+</body>
+
+</html>
