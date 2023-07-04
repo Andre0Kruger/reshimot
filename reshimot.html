@@ -3,148 +3,8 @@
 
 <head>
     <title>Reshimot</title>
-    <!-- reshimot é "anotação" em hebraico -->
+    <link rel="stylesheet" href="stylesheet.css" />
 </head>
-
-<style>
-    * {
-        font-family: sans-serif;
-    }
-
-    .container {
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-    }
-
-    #fichas {
-        box-sizing: border-box;
-    }
-
-    .ficha {
-        width: 12%;
-        height: 190px;
-        padding: 10px;
-        border: 2px solid #777;
-        border-radius: 5px;
-        text-align: center;
-        box-sizing: border-box;
-        display: inline-block;
-        vertical-align: top;
-        margin: 0 0.5% 10px 0;
-    }
-
-    #add {
-        cursor: pointer;
-        font-size: 150px;
-        color: #bbb;
-    }
-
-    .cabecalho {
-        height: 25px;
-    }
-
-    .ordem {
-        float: left;
-    }
-
-    .menu {
-        float: right;
-    }
-
-    .foto {
-        margin-bottom: 10px;
-        display: inline-block;
-    }
-
-    .foto img {
-        border-radius: 100%;
-        border: 2px solid #777;
-        width: 64px;
-        height: 64px;
-    }
-
-    .nome {
-        font-weight: bolder;
-        font-size: 18px;
-        color: #333;
-        margin-bottom: 10px;
-    }
-
-    .numeros {}
-
-    .numero {
-        border-radius: 50px;
-        background-color: aquamarine;
-        padding: 5px;
-        display: inline-block;
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    body {
-        box-sizing: border-box;
-    }
-
-    .popup {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        box-sizing: border-box;
-        text-align: center;
-    }
-
-    .popup .interno {
-        border-radius: 5px;
-        background-color: #fff;
-        padding: 25px;
-        display: inline-block;
-        margin-top: 25px;
-    }
-
-    .popup .grupo {
-        text-align: left;
-    }
-
-    .popup .grupo label {
-        display: block;
-        font-size: 12px;
-    }
-
-    .popup .grupo input {
-        margin-bottom: 10px;
-        width: 100%;
-        outline: none;
-    }
-
-    .popup .botoes {
-        margin-top: 20px;
-    }
-
-    .popup .botoes button {
-        border: none;
-        outline: none;
-        background-color: #777;
-        padding: 5px 10px;
-        border-radius: 3px;
-        font-weight: bold;
-        color: #fff;
-        cursor: pointer;
-    }
-
-    .popup .botoes .confirmar {
-        background-color: #166e22;
-    }
-
-    .popup .botoes .cancelar {
-        background-color: #6e1616;
-    }
-</style>
 
 <body>
 
@@ -154,7 +14,7 @@
                 <div class="ordem">
                     ?=ordem
                 </div>
-                <div class="menu">
+                <div class="menu" onclick="abrirContexto()">
                     ...
                 </div>
             </div>
@@ -216,7 +76,7 @@
 
     <div class="container">
         <div id="fichas">
-            <div class="ficha" id="add" onclick="add()">
+            <div id="add" onclick="add()">
                 +
             </div>
         </div>
@@ -247,27 +107,25 @@
             if (session && session != "undefined") {
                 sessao = JSON.parse(session);
                 render();
+                render();
             } else {
                 create();
             }
         }
 
         function add() {
-            let base = document.getElementById("base");
-
-            let novaFicha = document.createElement("div");
-            let numeroFicha = sessao.ultimaFicha;
-
-            novaFicha.setAttribute("id", "ficha_" + numeroFicha);
-            novaFicha.setAttribute("class", "ficha");
-            novaFicha.innerHTML = base.innerHTML;
-
-            sessao.novaFichaHTML = novaFicha;
             abrirFormulario();
         }
 
         function render() {
+
+            let fichas = document.getElementsByClassName("ficha");
+            let size = fichas.length;
             let index = 0;
+
+            for (i = size; i > 0 ; i--) {
+                fichas[i - 1].remove();
+            }
 
             sessao.fichas.sort(compare);
 
@@ -298,16 +156,11 @@
         }
 
         function confirmar() {
-            let novaFichaHTML = sessao.novaFichaHTML;
-            let novaFicha = obterDados();
-
-            updateFicha(novaFichaHTML, novaFicha);
-
-            document.getElementById("add").before(novaFichaHTML);
-            sessao.fichas.push(novaFicha);
+            sessao.fichas.push(obterDados());
             sessao.ultimaFicha++;
-            save();
 
+            save();
+            render();
             removerFormulario();
         }
 
