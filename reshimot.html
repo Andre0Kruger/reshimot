@@ -8,8 +8,11 @@
 
 <body>
 
+    <!-- sessão de componentes -->
     <div class="components hidden">
-        <div id="base">
+
+        <!-- ficha base -->
+        <div id="fichaBase">
             <div class="cabecalho">
                 <div class="ordem">
                     ?=ordem
@@ -21,45 +24,50 @@
             <div class="foto">
                 <img src="default.png" />
             </div>
-            <div class="nome">
+            <div class="nome" data-id="?=id" data-campo="nome">
                 ?=nome
             </div>
             <div class="numeros">
-                <div class="numero primeiro">
-                    ?=primeiro
-                </div>
-                <div class="numero segundo">
-                    ?=segundo
-                </div>
-                <div class="numero terceiro">
-                    ?=terceiro
-                </div>
+                <input type="text" inputmode="numeric" class="numero iniciativa" data-id="?=id" data-campo="iniciativa"
+                    value="?=iniciativa" onchange="edit('?=id')" />
+                <input type="text" inputmode="numeric" class="numero extra" data-id="?=id" data-campo="extra"
+                    value="?=extra" onchange="edit('?=id')" />
+                <input type="text" inputmode="numeric" class="numero vida" data-id="?=id" data-campo="vida"
+                    value="?=vida" onchange="edit('?=id')" />
+                <input type="text" inputmode="numeric" class="numero armadura" data-id="?=id" data-campo="armadura"
+                    value="?=armadura" onchange="edit('?=id')" />
             </div>
         </div>
 
-        <div id="popup">
+        <!-- formulario base -->
+        <div id="formBase">
             <div class="interno">
 
                 <h2>Preencha a ficha:</h2>
 
                 <div class="grupo">
                     <label>Nome:</label>
-                    <input type="text" class="_nome" />
+                    <input type="text" data-id="?=id" data-campo="nome" />
                 </div>
 
                 <div class="grupo">
                     <label>Iniciativa:</label>
-                    <input type="text" class="_iniciativa" />
+                    <input type="text" data-id="?=id" data-campo="iniciativa" />
                 </div>
 
                 <div class="grupo">
-                    <label>Vida:</label>
-                    <input type="text" class="_vida" />
+                    <label>Iniciativa Extra:</label>
+                    <input type="text" data-id="?=id" data-campo="extra" />
                 </div>
 
                 <div class="grupo">
-                    <label>Extra:</label>
-                    <input type="text" class="_extra" />
+                    <label>Pontos de Vida:</label>
+                    <input type="text" data-id="?=id" data-campo="vida" />
+                </div>
+
+                <div class="grupo">
+                    <label>Pontos de Armadura:</label>
+                    <input type="text" data-id="?=id" data-campo="armadura" />
                 </div>
 
                 <div class="botoes">
@@ -69,204 +77,267 @@
             </div>
         </div>
 
-        <div id="contexto">
+        <!-- menu de contexto base -->
+        <div id="contextoBase">
             <ul>
                 <li>Atualizar</li>
                 <li onclick="remover('?=id')">Remover</li>
             </ul>
         </div>
-
     </div>
 
-
-
-
+    <!-- parte visivel da tela -->
     <div class="container">
         <div id="fichas">
             <div id="add" onclick="add()">
                 +
             </div>
         </div>
+
+        <button onclick="exportar()">Exportar</button>
     </div>
-
-
-    <script>
-
-        // localStorage.setItem('sessao', undefined);
-
-        var sessao;
-
-        load();
-
-        function create() {
-            sessao = {
-                ultimaFicha: 0,
-                fichas: []
-            }
-        }
-
-        function save() {
-            localStorage.setItem('sessao', JSON.stringify(sessao));
-        }
-
-        function load() {
-            let session = localStorage.getItem('sessao');
-            if (session && session != "undefined") {
-                sessao = JSON.parse(session);
-                render();
-                render();
-            } else {
-                create();
-            }
-        }
-
-        function add() {
-            abrirFormulario();
-        }
-
-        function render() {
-
-            let fichas = document.getElementsByClassName("ficha");
-            let index = 0;
-
-            while (fichas.length > 0) {
-                fichas[0].remove();
-            }
-
-            sessao.fichas.sort(compare);
-
-            for (const ficha of sessao.fichas) {
-                index++;
-                let novaFicha = updateFicha(ficha, index);
-                document.getElementById("add").before(novaFicha);
-            }
-        }
-
-        function abrirFormulario() {
-
-            let base = document.getElementById("popup");
-            let novoPopup = document.createElement("div");
-
-            novoPopup.innerHTML = base.innerHTML;
-            novoPopup.setAttribute("class", "popup");
-            novoPopup.setAttribute("id", "fichaForm");
-
-            document.body.append(novoPopup);
-        }
-
-        function removerFormulario() {
-            document.getElementById("fichaForm").remove();
-
-            sessao.novaFichaHTML = undefined;
-            sessao.novaFicha = undefined;
-        }
-
-        function confirmar() {
-            sessao.fichas.push(obterDados());
-            sessao.ultimaFicha++;
-
-            save();
-            render();
-            removerFormulario();
-        }
-
-        function updateFicha(ficha, index) {
-
-            let base = document.getElementById("base");
-            let novaFichaHTML = document.createElement("div");
-
-            novaFichaHTML.setAttribute("id", "ficha_" + ficha.id);
-            novaFichaHTML.setAttribute("class", "ficha");
-
-            let html = base.innerHTML;
-
-            html = html.replace("?=ordem", "#" + index);
-            html = html.replace("?=id", ficha.id);
-            html = html.replace("?=nome", ficha.nome);
-            html = html.replace("?=primeiro", ficha.iniciativa);
-            html = html.replace("?=segundo", ficha.vida);
-            html = html.replace("?=terceiro", ficha.extra);
-
-            novaFichaHTML.innerHTML = html;
-            return novaFichaHTML;
-        }
-
-        function obterDados() {
-
-            let formulario = document.getElementById("fichaForm");
-
-            return {
-                nome: formulario.getElementsByClassName("_nome")[0].value,
-                iniciativa: formulario.getElementsByClassName("_iniciativa")[0].value,
-                vida: formulario.getElementsByClassName("_vida")[0].value,
-                extra: formulario.getElementsByClassName("_extra")[0].value,
-                id: sessao.ultimaFicha + 1
-            }
-        }
-
-        function compare(a, b) {
-
-            if (parseInt(a.iniciativa) > parseInt(b.iniciativa)) {
-                return -1;
-            }
-
-            if (parseInt(a.iniciativa) < parseInt(b.iniciativa)) {
-                return 1;
-            }
-
-            return 0;
-        }
-
-        function abrirContexto(id, me) {
-
-            removerContexto();
-
-            let base = document.getElementById("contexto");
-            let contexto = document.createElement("div");
-
-            contexto.innerHTML = base.innerHTML.replaceAll("?=id", id);
-
-            contexto.setAttribute("class", "contexto");
-            contexto.setAttribute("style", "top: " + me.offsetTop + "px; left: " + me.offsetLeft + "px");
-
-            document.body.append(contexto);
-
-        }
-
-        function get(id) {
-            for (const ficha of sessao.fichas) {
-                if (ficha.id == id) {
-                    return ficha;
-                }
-            }
-        }
-
-        function removerContexto(e) {
-
-            if (e && e.target.className == "menu") {
-                return;
-            }
-
-            let contextos = document.getElementsByClassName("contexto");
-
-            while (contextos.length > 0) {
-                contextos[0].remove();
-            }
-        }
-
-        function remover(id) {
-            sessao.fichas.splice(sessao.fichas.indexOf(get(id)), 1);
-
-            save();
-            render();
-        }
-
-        document.addEventListener("click", (event) => { removerContexto(event) });
-
-
-
-
-    </script>
 </body>
+
+<script>
+
+    // localStorage.setItem('sessao', undefined);
+
+    var sessao;
+
+    load();
+
+    // carrega do armazenamento local o objeto de sessão
+    function load() {
+        let session = localStorage.getItem('sessao');
+        if (session && session != "undefined") {
+            sessao = JSON.parse(session);
+            render();
+        } else {
+            create();
+        }
+    }
+
+    // obtem da sessão uma ficha pelo id
+    function get(id) {
+        for (const ficha of sessao.fichas) {
+            if (ficha.id == id) {
+                return ficha;
+            }
+        }
+    }
+
+    // cria o objeto de sessão
+    function create() {
+        sessao = {
+            ultimaFicha: 0,
+            fichas: []
+        }
+    }
+
+    // salva o objeto de sessão
+    function save() {
+        localStorage.setItem('sessao', JSON.stringify(sessao));
+    }
+
+    // renderiza as fichas em tela
+    function render() {
+        let fichas = sessao.fichas;
+        let fichasHTML = document.getElementsByClassName("ficha");
+
+        // remove todas as fichas da tela
+        while (fichasHTML.length > 0) {
+            fichasHTML[0].remove();
+        }
+
+        // ordena as fichas por iniciativa
+        fichas.sort(compare);
+
+        for (i = 0; i < fichas.length; i++) {
+            document.getElementById("add").before(buildFicha(fichas[i], i));
+        }
+    }
+
+    function add() {
+        abrirFormulario();
+    }
+
+    function abrirFormulario() {
+
+        let base = document.getElementById("formBase");
+        let novoPopup = document.createElement("div");
+
+        novoPopup.innerHTML = base.innerHTML.replaceAll("?=id", "form");
+        novoPopup.setAttribute("class", "popup");
+        novoPopup.setAttribute("id", "fichaForm");
+
+        document.body.append(novoPopup);
+    }
+
+    function removerFormulario() {
+        document.getElementById("fichaForm").remove();
+    }
+
+    function confirmar() {
+        sessao.fichas.push(obterDadosFormulario());
+        sessao.ultimaFicha++;
+
+        save();
+        render();
+        removerFormulario();
+    }
+
+    function buildFicha(ficha, index) {
+        let base = document.getElementById("fichaBase");
+        let novaFichaHTML = document.createElement("div");
+
+        novaFichaHTML.setAttribute("id", "ficha_" + ficha.id);
+        novaFichaHTML.setAttribute("class", "ficha");
+
+        let html = base.innerHTML;
+
+        html = html.replaceAll("?=ordem", "#" + (index + 1));
+        html = html.replaceAll("?=id", ficha.id);
+        html = html.replaceAll("?=nome", ficha.nome);
+        html = html.replaceAll("?=iniciativa", ficha.iniciativa);
+        html = html.replaceAll("?=vida", ficha.vida);
+        html = html.replaceAll("?=extra", ficha.extra);
+        html = html.replaceAll("?=armadura", ficha.armadura);
+
+        novaFichaHTML.innerHTML = html;
+        return novaFichaHTML;
+    }
+
+    function obterDadosFormulario() {
+        let ficha = {
+            nome: obterDados('form', 'nome'),
+            iniciativa: obterDados('form', 'iniciativa'),
+            vida: obterDados('form', 'vida'),
+            extra: obterDados('form', 'extra'),
+            armadura: obterDados('form', 'armadura'),
+            id: sessao.ultimaFicha + 1
+        }
+
+        return ficha;
+    }
+
+    function obterDados(id, nomeCampo) {
+        let campo = document.querySelector(`[data-id="${id}"][data-campo="${nomeCampo}"]`);
+
+        if (campo && campo.value) {
+            return campo.value;
+        }
+
+        if (campo && campo.innerText) {
+            return campo.innerText;
+        }
+
+        return '';
+    }
+
+    function compare(a, b) {
+
+        if (parseInt(a.iniciativa) > parseInt(b.iniciativa)) {
+            return -1;
+        }
+
+        if (parseInt(a.iniciativa) < parseInt(b.iniciativa)) {
+            return 1;
+        }
+
+        if (parseInt(a.extra) > parseInt(b.extra)) {
+            return -1;
+        }
+
+        if (parseInt(a.extra) < parseInt(b.extra)) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    function abrirContexto(id, me) {
+
+        removerContexto();
+
+        let base = document.getElementById("contextoBase");
+        let contexto = document.createElement("div");
+
+        contexto.innerHTML = base.innerHTML.replaceAll("?=id", id);
+
+        contexto.setAttribute("class", "contexto");
+        contexto.setAttribute("style", "top: " + me.offsetTop + "px; left: " + me.offsetLeft + "px");
+
+        document.body.append(contexto);
+
+        // console.log(obterDados(id, 'nome'));
+
+    }
+
+    function removerContexto(e) {
+
+        if (e && e.target.className == "menu") {
+            return;
+        }
+
+        let contextos = document.getElementsByClassName("contexto");
+
+        while (contextos.length > 0) {
+            contextos[0].remove();
+        }
+    }
+
+    function remover(id) {
+        sessao.fichas.splice(sessao.fichas.indexOf(get(id)), 1);
+
+        save();
+        render();
+    }
+
+    function exportar() {
+        let nome = "backup_" + new Date().getTime();
+        let json = JSON.stringify(sessao);
+        let link = document.createElement('a');
+
+        link.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(json));
+        link.setAttribute('download', nome + '.json');
+        link.click();
+    }
+
+    function importar() {
+
+        document.getElementById("arquivo");
+
+    }
+
+    function edit(id) {
+        let ficha = get(id);
+
+        ficha.iniciativa = processar(obterDados(id, 'iniciativa'), ficha.iniciativa);
+        ficha.vida = processar(obterDados(id, 'vida'), ficha.vida);
+        ficha.extra = processar(obterDados(id, 'extra'), ficha.extra);
+        ficha.armadura = processar(obterDados(id, 'armadura'), ficha.extra);
+
+        save();
+        render();
+        console.log('salvo')
+    }
+
+    function processar(novoValor, valor) {
+        try {
+            let calculo = eval(novoValor);
+            if (novoValor.startsWith('+') || novoValor.startsWith('-')) {
+                return parseInt(valor) + parseInt(calculo);
+            }
+
+            return calculo;
+        } catch (error) {
+            return novoValor;
+        }
+    }
+
+
+    document.addEventListener("change", importar);
+    document.addEventListener("click", (event) => { removerContexto(event) });
+</script>
 
 </html>
