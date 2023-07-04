@@ -38,10 +38,13 @@
 
 .ordem {
     float: left;
+    font-weight: bold;
 }
 
 .menu {
     float: right;
+    cursor: pointer;
+    font-weight: bolder;
 }
 
 .foto {
@@ -135,4 +138,29 @@ body {
 
 .popup .botoes .cancelar {
     background-color: #6e1616;
+}
+
+.contexto {
+    display: inline-block;
+    border: #919191 solid 1px;
+    position: absolute;
+    background-color: #fff;
+    border-radius: 3px;
+}
+
+.contexto ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contexto li {
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #333;
+}
+
+.contexto li:hover {
+    background-color: #efefef;
 }

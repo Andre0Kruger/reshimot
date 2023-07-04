@@ -14,7 +14,7 @@
                 <div class="ordem">
                     ?=ordem
                 </div>
-                <div class="menu" onclick="abrirContexto()">
+                <div class="menu" onclick="abrirContexto('?=id', this)">
                     ...
                 </div>
             </div>
@@ -67,8 +67,15 @@
                     <button onclick="removerFormulario()" class="cancelar">Cancelar</button>
                 </div>
             </div>
-
         </div>
+
+        <div id="contexto">
+            <ul>
+                <li>Atualizar</li>
+                <li onclick="remover('?=id')">Remover</li>
+            </ul>
+        </div>
+
     </div>
 
 
@@ -120,11 +127,10 @@
         function render() {
 
             let fichas = document.getElementsByClassName("ficha");
-            let size = fichas.length;
             let index = 0;
 
-            for (i = size; i > 0 ; i--) {
-                fichas[i - 1].remove();
+            while (fichas.length > 0) {
+                fichas[0].remove();
             }
 
             sessao.fichas.sort(compare);
@@ -175,6 +181,7 @@
             let html = base.innerHTML;
 
             html = html.replace("?=ordem", "#" + index);
+            html = html.replace("?=id", ficha.id);
             html = html.replace("?=nome", ficha.nome);
             html = html.replace("?=primeiro", ficha.iniciativa);
             html = html.replace("?=segundo", ficha.vida);
@@ -195,8 +202,6 @@
                 extra: formulario.getElementsByClassName("_extra")[0].value,
                 id: sessao.ultimaFicha + 1
             }
-
-
         }
 
         function compare(a, b) {
@@ -211,6 +216,54 @@
 
             return 0;
         }
+
+        function abrirContexto(id, me) {
+
+            removerContexto();
+
+            let base = document.getElementById("contexto");
+            let contexto = document.createElement("div");
+
+            contexto.innerHTML = base.innerHTML.replaceAll("?=id", id);
+
+            contexto.setAttribute("class", "contexto");
+            contexto.setAttribute("style", "top: " + me.offsetTop + "px; left: " + me.offsetLeft + "px");
+
+            document.body.append(contexto);
+
+        }
+
+        function get(id) {
+            for (const ficha of sessao.fichas) {
+                if (ficha.id == id) {
+                    return ficha;
+                }
+            }
+        }
+
+        function removerContexto(e) {
+
+            if (e && e.target.className == "menu") {
+                return;
+            }
+
+            let contextos = document.getElementsByClassName("contexto");
+
+            while (contextos.length > 0) {
+                contextos[0].remove();
+            }
+        }
+
+        function remover(id) {
+            sessao.fichas.splice(sessao.fichas.indexOf(get(id)), 1);
+
+            save();
+            render();
+        }
+
+        document.addEventListener("click", (event) => { removerContexto(event) });
+
+
 
 
     </script>
