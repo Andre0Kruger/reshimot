@@ -28,14 +28,26 @@
                 ?=nome
             </div>
             <div class="numeros">
-                <input type="text" inputmode="numeric" class="numero iniciativa" data-id="?=id" data-campo="iniciativa"
-                    value="?=iniciativa" onchange="edit('?=id')" />
-                <input type="text" inputmode="numeric" class="numero extra" data-id="?=id" data-campo="extra"
-                    value="?=extra" onchange="edit('?=id')" />
-                <input type="text" inputmode="numeric" class="numero vida" data-id="?=id" data-campo="vida"
-                    value="?=vida" onchange="edit('?=id')" />
-                <input type="text" inputmode="numeric" class="numero armadura" data-id="?=id" data-campo="armadura"
-                    value="?=armadura" onchange="edit('?=id')" />
+                <div class="grupo">
+                    <label>Iniciativa:</label>
+                    <input type="text" inputmode="numeric" class="numero iniciativa" data-id="?=id"
+                        data-campo="iniciativa" value="?=iniciativa" onchange="edit('?=id')" />
+                </div>
+                <div class="grupo">
+                    <label>Iniciativa extra:</label>
+                    <input type="text" inputmode="numeric" class="numero extra" data-id="?=id" data-campo="extra"
+                        value="?=extra" onchange="edit('?=id')" />
+                </div>
+                <div class="grupo">
+                    <label>Vida (HP):</label>
+                    <input type="text" inputmode="numeric" class="numero vida" data-id="?=id" data-campo="vida"
+                        value="?=vida" onchange="edit('?=id')" />
+                </div>
+                <div class="grupo">
+                    <label>Armadura (CA):</label>
+                    <input type="text" inputmode="numeric" class="numero armadura" data-id="?=id" data-campo="armadura"
+                        value="?=armadura" onchange="edit('?=id')" />
+                </div>
             </div>
         </div>
 
@@ -87,14 +99,22 @@
     </div>
 
     <!-- parte visivel da tela -->
+
+    <div class="nav">
+        <div class="logo" title="Reshimot">R</div>
+        <div class="acoes">
+            <button onclick="exportar()">E</button>
+            <button onclick="importar()">I</button>
+            <button onclick="trocarSessao()">T</button>
+        </div>
+    </div>
+
     <div class="container">
         <div id="fichas">
             <div id="add" onclick="add()">
                 +
             </div>
         </div>
-
-        <button onclick="exportar()">Exportar</button>
     </div>
 </body>
 

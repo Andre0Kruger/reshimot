@@ -2,6 +2,45 @@
     font-family: sans-serif;
 }
 
+body {
+    background-color: #202124;
+    color: #ccc;
+    padding-left: 70px;
+}
+
+.nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 100%;
+    width: 64px;
+    padding: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.nav .logo {
+    font-weight: bolder;
+    font-size: 30px;
+    text-align: center;
+    color: #b887da;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.nav button {
+    background-color: #202124;
+    color: #777;
+    border: none;
+    padding: 10px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    width: 54px;
+    margin-top: 5px;
+}
+
 .container {
     width: 100%;
     padding: 10px;
@@ -14,19 +53,22 @@
 
 .ficha,
 #add {
-    width: 12%;
-    height: 220px;
+    width: 220px;
+    height: 248px;
     padding: 10px;
-    border: 2px solid #a8a8a8;
+    padding-bottom: 12px;
+    border: 1px solid #353535;
     border-radius: 5px;
     text-align: center;
     box-sizing: border-box;
     display: inline-block;
     vertical-align: top;
     margin: 0 0.5% 10px 0;
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 #add {
+    background-color: rgba(255, 255, 255, 0.01);
     cursor: pointer;
     font-size: 150px;
     color: #bbb;
@@ -39,12 +81,16 @@
 .ordem {
     float: left;
     font-weight: bold;
+    color: #ccc;
 }
 
 .menu {
     float: right;
     cursor: pointer;
     font-weight: bolder;
+    color: #ccc;
+    margin-top: -10px;
+    padding: 5px;
 }
 
 .foto {
@@ -54,7 +100,7 @@
 
 .foto img {
     border-radius: 100%;
-    border: 2px solid #777;
+    border: 1px solid #454545;
     width: 64px;
     height: 64px;
 }
@@ -62,22 +108,34 @@
 .nome {
     font-weight: bolder;
     font-size: 18px;
-    color: #333;
+    color: #ccc;
     margin-bottom: 10px;
 }
 
+.numeros .grupo {
+    display: inline-block;
+    text-align: left;
+    margin-top: 8px;
+}
+
+.numeros label {
+    display: block;
+    font-size: 10px;
+    margin: 0 0 -20px 10px;
+}
+
 .numeros input {
-    width: 60px;
+    width: 80px;
     outline: none;
     border: none;
-    text-align: center;
     margin-top: 5px;
+    z-index: 99;
 }
 
 .numero {
-    border-radius: 50px;
-    background-color: rgb(70, 70, 70);
-    padding: 5px;
+    border-radius: 3px;
+    background-color: rgba(70, 70, 70, 0.5);
+    padding: 20px 5px 5px 10px;
     display: inline-block;
     color: #fff;
 }
@@ -103,7 +161,7 @@ body {
 
 .popup .interno {
     border-radius: 5px;
-    background-color: #fff;
+    background-color: #454545;
     padding: 25px;
     display: inline-block;
     margin-top: 25px;
@@ -119,9 +177,15 @@ body {
 }
 
 .popup .grupo input {
+    border-radius: 3px;
     margin-bottom: 10px;
+    padding: 5px 10px;
     width: 100%;
+    border: none;
     outline: none;
+    box-sizing: border-box;
+    color: #DDD;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .popup .botoes {
@@ -131,20 +195,19 @@ body {
 .popup .botoes button {
     border: none;
     outline: none;
-    background-color: #777;
     padding: 5px 10px;
     border-radius: 3px;
     font-weight: bold;
-    color: #fff;
+    color: #777;
     cursor: pointer;
 }
 
 .popup .botoes .confirmar {
-    background-color: #166e22;
+    background-color: #273529;
 }
 
 .popup .botoes .cancelar {
-    background-color: #6e1616;
+    background-color: #3f2626;
 }
 
 .contexto {
