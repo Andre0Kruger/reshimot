@@ -198,12 +198,15 @@
     }
 
     function confirmar() {
-        sessao.fichas.push(obterDadosFormulario());
+        let ficha = obterDadosFormulario();
+        sessao.fichas.push(ficha);
         sessao.ultimaFicha++;
 
         save();
         render();
         removerFormulario();
+
+        console.log('INSERT: inserção de ficha -> ' + JSON.stringify(ficha));
     }
 
     function buildFicha(ficha, index) {
@@ -229,12 +232,12 @@
 
     function obterDadosFormulario() {
         let ficha = {
+            id: sessao.ultimaFicha + 1,
             nome: obterDados('form', 'nome'),
             iniciativa: obterDados('form', 'iniciativa'),
-            vida: obterDados('form', 'vida'),
             extra: obterDados('form', 'extra'),
-            armadura: obterDados('form', 'armadura'),
-            id: sessao.ultimaFicha + 1
+            vida: obterDados('form', 'vida'),
+            armadura: obterDados('form', 'armadura')
         }
 
         return ficha;
@@ -307,10 +310,13 @@
     }
 
     function remover(id) {
-        sessao.fichas.splice(sessao.fichas.indexOf(get(id)), 1);
+        let ficha = get(id);
+        sessao.fichas.splice(sessao.fichas.indexOf(ficha), 1);
 
         save();
         render();
+
+        console.log('DELETE: remoção de ficha -> ' + JSON.stringify(ficha));
     }
 
     function exportar() {
@@ -332,27 +338,38 @@
     function edit(id) {
         let ficha = get(id);
 
-        ficha.iniciativa = processar(obterDados(id, 'iniciativa'), ficha.iniciativa);
-        ficha.vida = processar(obterDados(id, 'vida'), ficha.vida);
-        ficha.extra = processar(obterDados(id, 'extra'), ficha.extra);
-        ficha.armadura = processar(obterDados(id, 'armadura'), ficha.extra);
+        ficha.iniciativa = processar(id, 'iniciativa', ficha.iniciativa);
+        ficha.vida = processar(id, 'vida', ficha.vida);
+        ficha.extra = processar(id, 'extra', ficha.extra);
+        ficha.armadura = processar(id, 'armadura', ficha.armadura);
 
         save();
         render();
-        console.log('salvo')
     }
 
-    function processar(novoValor, valor) {
+    function processar(id, campo, valor) {
+
+        let novoValor = obterDados(id, campo);
+        let retorno;
+
         try {
             let calculo = eval(novoValor);
             if (novoValor.startsWith('+') || novoValor.startsWith('-')) {
-                return parseInt(valor) + parseInt(calculo);
+                retorno = parseInt(valor) + parseInt(calculo);
+            } else {
+                retorno = calculo;
             }
 
-            return calculo;
         } catch (error) {
-            return novoValor;
+            returno = novoValor;
         }
+
+        if (valor != retorno) {
+            let ficha = get(id);
+            console.log(`UPDATE: ${campo} de '${valor}' para '${retorno}' de '${ficha.nome}'.`);
+        }
+
+        return retorno;
     }
 
 
