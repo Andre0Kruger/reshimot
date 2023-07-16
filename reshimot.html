@@ -13,40 +13,42 @@
 
         <!-- ficha base -->
         <div id="fichaBase">
-            <div class="cabecalho">
-                <div class="ordem">
-                    ?=ordem
+            <div class="inner" ondblclick="abrirForm('?=id', this)">
+                <div class="cabecalho">
+                    <div class="ordem">
+                        ?=ordem
+                    </div>
+                    <div class="menu" onclick="abrirContexto('?=id', this)">
+                        ...
+                    </div>
                 </div>
-                <div class="menu" onclick="abrirContexto('?=id', this)">
-                    ...
+                <div class="foto">
+                    <img src="default.png" />
                 </div>
-            </div>
-            <div class="foto">
-                <img src="default.png" />
-            </div>
-            <div class="nome" data-id="?=id" data-campo="nome">
-                ?=nome
-            </div>
-            <div class="numeros">
-                <div class="grupo">
-                    <label>Iniciativa:</label>
-                    <input type="text" inputmode="numeric" class="numero iniciativa" data-id="?=id"
-                        data-campo="iniciativa" value="?=iniciativa" onchange="edit('?=id')" />
+                <div class="nome" data-id="?=id" data-campo="nome">
+                    ?=nome
                 </div>
-                <div class="grupo">
-                    <label>Iniciativa extra:</label>
-                    <input type="text" inputmode="numeric" class="numero extra" data-id="?=id" data-campo="extra"
-                        value="?=extra" onchange="edit('?=id')" />
-                </div>
-                <div class="grupo">
-                    <label>Vida (HP):</label>
-                    <input type="text" inputmode="numeric" class="numero vida" data-id="?=id" data-campo="vida"
-                        value="?=vida" onchange="edit('?=id')" />
-                </div>
-                <div class="grupo">
-                    <label>Armadura (CA):</label>
-                    <input type="text" inputmode="numeric" class="numero armadura" data-id="?=id" data-campo="armadura"
-                        value="?=armadura" onchange="edit('?=id')" />
+                <div class="numeros">
+                    <div class="grupo">
+                        <label>Iniciativa:</label>
+                        <input type="text" inputmode="numeric" class="numero iniciativa" data-id="?=id"
+                            data-campo="iniciativa" value="?=iniciativa" onchange="edit('?=id')" />
+                    </div>
+                    <div class="grupo">
+                        <label>Iniciativa extra:</label>
+                        <input type="text" inputmode="numeric" class="numero extra" data-id="?=id" data-campo="extra"
+                            value="?=extra" onchange="edit('?=id')" />
+                    </div>
+                    <div class="grupo">
+                        <label>Vida (HP):</label>
+                        <input type="text" inputmode="numeric" class="numero vida" data-id="?=id" data-campo="vida"
+                            value="?=vida" onchange="edit('?=id')" />
+                    </div>
+                    <div class="grupo">
+                        <label>Armadura (CA):</label>
+                        <input type="text" inputmode="numeric" class="numero armadura" data-id="?=id"
+                            data-campo="armadura" value="?=armadura" onchange="edit('?=id')" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,34 +56,48 @@
         <!-- formulario base -->
         <div id="formBase">
             <div class="interno">
-
-                <h2>Preencha a ficha:</h2>
-
-                <div class="grupo">
-                    <label>Nome:</label>
-                    <input type="text" data-id="?=id" data-campo="nome" />
+                <div class="esquerda">
+                    <h2>Ficha de personagem</h2>
                 </div>
-
-                <div class="grupo">
-                    <label>Iniciativa:</label>
-                    <input type="text" data-id="?=id" data-campo="iniciativa" />
+                <div class="direita">
+                    <div class="foto">
+                        <img src="default.png" />
+                    </div>
                 </div>
-
-                <div class="grupo">
-                    <label>Iniciativa Extra:</label>
-                    <input type="text" data-id="?=id" data-campo="extra" />
+                <div class="esquerda">
+                    <div class="grupo">
+                        <label>Nome:</label>
+                        <input type="text" data-id="?=id" data-campo="nome" />
+                    </div>
+                    <div class="anotacao">
+                        <label>Anotações</label>
+                        <textarea data-id="?=id" data-campo="anotacao"></textarea>
+                    </div>
                 </div>
+                <div class="direita">
 
-                <div class="grupo">
-                    <label>Pontos de Vida:</label>
-                    <input type="text" data-id="?=id" data-campo="vida" />
+                    <input type="hidden" data-id="?=id" data-campo="idFicha" />
+
+                    <div class="grupo">
+                        <label>Iniciativa:</label>
+                        <input type="text" data-id="?=id" data-campo="iniciativa" />
+                    </div>
+
+                    <div class="grupo">
+                        <label>Iniciativa Extra:</label>
+                        <input type="text" data-id="?=id" data-campo="extra" />
+                    </div>
+
+                    <div class="grupo">
+                        <label>Pontos de Vida:</label>
+                        <input type="text" data-id="?=id" data-campo="vida" />
+                    </div>
+
+                    <div class="grupo">
+                        <label>Pontos de Armadura:</label>
+                        <input type="text" data-id="?=id" data-campo="armadura" />
+                    </div>
                 </div>
-
-                <div class="grupo">
-                    <label>Pontos de Armadura:</label>
-                    <input type="text" data-id="?=id" data-campo="armadura" />
-                </div>
-
                 <div class="botoes">
                     <button onclick="confirmar()" class="confirmar">Confirmar</button>
                     <button onclick="removerFormulario()" class="cancelar">Cancelar</button>
@@ -199,8 +215,22 @@
 
     function confirmar() {
         let ficha = obterDadosFormulario();
-        sessao.fichas.push(ficha);
-        sessao.ultimaFicha++;
+
+        if (ficha.id) {
+            let fichaSessao = get(ficha.id);
+
+            fichaSessao.nome = ficha.nome;
+            fichaSessao.iniciativa = ficha.iniciativa;
+            fichaSessao.vida = ficha.vida;
+            fichaSessao.extra = ficha.extra;
+            fichaSessao.armadura = ficha.armadura;
+            fichaSessao.anotacao = ficha.anotacao;
+
+        } else {
+            sessao.ultimaFicha++;
+            ficha.id = sessao.ultimaFicha;
+            sessao.fichas.push(ficha);
+        }
 
         save();
         render();
@@ -225,6 +255,7 @@
         html = html.replaceAll("?=vida", ficha.vida);
         html = html.replaceAll("?=extra", ficha.extra);
         html = html.replaceAll("?=armadura", ficha.armadura);
+        html = html.replaceAll("?=anotacao", ficha.anotacao);
 
         novaFichaHTML.innerHTML = html;
         return novaFichaHTML;
@@ -232,12 +263,13 @@
 
     function obterDadosFormulario() {
         let ficha = {
-            id: sessao.ultimaFicha + 1,
+            id: obterDados('form', 'idFicha'),
             nome: obterDados('form', 'nome'),
             iniciativa: obterDados('form', 'iniciativa'),
             extra: obterDados('form', 'extra'),
             vida: obterDados('form', 'vida'),
-            armadura: obterDados('form', 'armadura')
+            armadura: obterDados('form', 'armadura'),
+            anotacao: obterDados('form', 'anotacao')
         }
 
         return ficha;
@@ -255,6 +287,11 @@
         }
 
         return '';
+    }
+
+    function definirDados(id, nomeCampo, valor) {
+        let campo = document.querySelector(`[data-id="${id}"][data-campo="${nomeCampo}"]`);
+        campo.value = valor;
     }
 
     function compare(a, b) {
@@ -294,6 +331,20 @@
 
         // console.log(obterDados(id, 'nome'));
 
+    }
+
+    function abrirForm(id, me) {
+        abrirFormulario();
+
+        let ficha = get(id);
+
+        definirDados('form', 'idFicha', ficha.id);
+        definirDados('form', 'nome', ficha.nome);
+        definirDados('form', 'iniciativa', ficha.iniciativa);
+        definirDados('form', 'extra', ficha.extra);
+        definirDados('form', 'vida', ficha.vida);
+        definirDados('form', 'armadura', ficha.armadura);
+        definirDados('form', 'anotacao', ficha.anotacao);
     }
 
     function removerContexto(e) {
@@ -372,9 +423,16 @@
         return retorno;
     }
 
+    function fecharTudo(e) {
+        if (e.key === "Escape") {
+            removerContexto(e);
+            removerFormulario();
+        }
+    }
 
     document.addEventListener("change", importar);
     document.addEventListener("click", (event) => { removerContexto(event) });
+    document.addEventListener("keydown", (event) => { fecharTudo(event) });
 </script>
 
 </html>

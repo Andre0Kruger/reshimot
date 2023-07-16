@@ -1,5 +1,8 @@
 * {
     font-family: sans-serif;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 body {
@@ -165,18 +168,31 @@ body {
     padding: 25px;
     display: inline-block;
     margin-top: 25px;
+    width: 500px;
+    box-sizing: border-box;
+}
+
+.popup .interno h2 {
+    text-align: left;
 }
 
 .popup .grupo {
     text-align: left;
+    max-width: 300px;
 }
 
-.popup .grupo label {
+.popup .anotacao {
+    text-align: left;
+}
+
+.popup .grupo label,
+.popup .anotacao label {
     display: block;
     font-size: 12px;
 }
 
-.popup .grupo input {
+.popup .grupo input,
+.popup .anotacao textarea {
     border-radius: 3px;
     margin-bottom: 10px;
     padding: 5px 10px;
@@ -188,26 +204,54 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.popup .anotacao textarea {
+    resize: none;
+    height: 125px;
+}
+
 .popup .botoes {
-    margin-top: 20px;
+    margin-top: 10px;
+    text-align: left;
 }
 
 .popup .botoes button {
     border: none;
     outline: none;
-    padding: 5px 10px;
+    padding: 10px 15px 8px;
     border-radius: 3px;
     font-weight: bold;
-    color: #777;
+    color: #fff;
     cursor: pointer;
+    line-height: normal;
 }
 
 .popup .botoes .confirmar {
-    background-color: #273529;
+    background-color: #0075d3;
 }
 
 .popup .botoes .cancelar {
-    background-color: #3f2626;
+    background-color: #2c2c2c;
+    color: #ccc;
+}
+
+.popup .esquerda {
+    display: inline-block;
+    width: 59%;
+    box-sizing: border-box;
+    vertical-align: top;
+}
+
+.popup .direita {
+    display: inline-block;
+    width: 40%;
+    box-sizing: border-box;
+    padding-left: 10px;
+    vertical-align: top;
+}
+
+.popup .foto {
+    display: block;
+    text-align: center;
 }
 
 .contexto {
