@@ -19,9 +19,7 @@
                     <div class="ordem">
                         ?=ordem
                     </div>
-                    <div class="menu" onclick="abrirContexto('?=id', this)">
-                        ...
-                    </div>
+                    <div class="menu" onclick="abrirContexto('?=id', this)"></div>
                 </div>
                 <div class="foto">
                     <img src="default.png" />
@@ -109,7 +107,7 @@
         <!-- menu de contexto base -->
         <div id="contextoBase">
             <ul>
-                <li>Atualizar</li>
+                <li>Cancelar</li>
                 <li onclick="remover('?=id')">Remover</li>
             </ul>
         </div>
@@ -262,7 +260,7 @@
         html = html.replaceAll("?=armadura", ficha.armadura);
         html = html.replaceAll("?=anotacao", ficha.anotacao);
 
-        if (ficha.morrendo) {
+        if (ficha.vida < 1) {
             novaFichaHTML.classList.add('morte');
         }
 
@@ -305,8 +303,8 @@
 
     function compare(a, b) {
 
-        if (a.morrendo != b.morrendo) {
-            if (a.morrendo) {
+        if ((a.vida < 1) != (b.vida < 1)) {
+            if (a.vida < 1) {
                 return 1;
             }
 
@@ -341,8 +339,11 @@
 
         contexto.innerHTML = base.innerHTML.replaceAll("?=id", id);
 
+        let top = me.offsetTop + 10;
+        let left = me.offsetLeft + 10;
+
         contexto.setAttribute("class", "contexto");
-        contexto.setAttribute("style", "top: " + me.offsetTop + "px; left: " + me.offsetLeft + "px");
+        contexto.setAttribute("style", "top: " + top + "px; left: " + left + "px");
 
         document.body.append(contexto);
 
@@ -410,10 +411,6 @@
         ficha.vida = processar(id, 'vida', ficha.vida);
         ficha.extra = processar(id, 'extra', ficha.extra);
         ficha.armadura = processar(id, 'armadura', ficha.armadura);
-
-        if (ficha.vida <= 0) {
-            ficha.morrendo = true;
-        }
 
         save();
         render();

@@ -88,6 +88,20 @@ body {
     opacity: 0.3;
 }
 
+.morte .foto::before {
+    content: '';
+    background-position: 0 0;
+    background-image: url('img/skull.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: inline-block;
+    position: absolute;
+    height: 64px;
+    width: 64px;
+    left: 0;
+    top: 0;
+}
+
 #add {
     background-color: rgba(255, 255, 255, 0.01);
     cursor: pointer;
@@ -110,13 +124,25 @@ body {
     cursor: pointer;
     font-weight: bolder;
     color: #ccc;
-    margin-top: -10px;
+    margin: -10px -10px 0 0;
     padding: 5px;
+    font-size: 10px;
+}
+
+.menu::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background-image: url('svg/remove.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: inline-block;
 }
 
 .foto {
     margin-bottom: 10px;
     display: inline-block;
+    position: relative;
 }
 
 .foto img {
@@ -274,9 +300,9 @@ body {
 
 .contexto {
     display: inline-block;
-    border: #919191 solid 1px;
+    border: #28292a solid 1px;
     position: absolute;
-    background-color: #fff;
+    background-color: #38393a;
     border-radius: 3px;
 }
 
@@ -290,11 +316,11 @@ body {
     padding: 5px 10px;
     cursor: pointer;
     font-size: 12px;
-    color: #333;
+    color: #ccc;
 }
 
 .contexto li:hover {
-    background-color: #efefef;
+    background-color: #28292a;
 }
 
 input::-webkit-outer-spin-button,
