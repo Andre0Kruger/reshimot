@@ -262,6 +262,10 @@
         html = html.replaceAll("?=armadura", ficha.armadura);
         html = html.replaceAll("?=anotacao", ficha.anotacao);
 
+        if (ficha.morrendo) {
+            novaFichaHTML.classList.add('morte');
+        }
+
         novaFichaHTML.innerHTML = html;
         return novaFichaHTML;
     }
@@ -300,6 +304,14 @@
     }
 
     function compare(a, b) {
+
+        if (a.morrendo != b.morrendo) {
+            if (a.morrendo) {
+                return 1;
+            }
+
+            return -1;
+        }
 
         if (parseInt(a.iniciativa) > parseInt(b.iniciativa)) {
             return -1;
@@ -399,6 +411,10 @@
         ficha.extra = processar(id, 'extra', ficha.extra);
         ficha.armadura = processar(id, 'armadura', ficha.armadura);
 
+        if (ficha.vida <= 0) {
+            ficha.morrendo = true;
+        }
+
         save();
         render();
     }
@@ -438,7 +454,7 @@
     function prevent(e) {
         e.cancelBubble = true;
         if (e.stopPropagation) e.stopPropagation();
-    }; 
+    };
 
     document.addEventListener("change", importar);
     document.addEventListener("click", (event) => { removerContexto(event) });

@@ -80,6 +80,14 @@ body {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
+.morte {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.morte img {
+    opacity: 0.3;
+}
+
 #add {
     background-color: rgba(255, 255, 255, 0.01);
     cursor: pointer;
