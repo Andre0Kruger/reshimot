@@ -216,9 +216,17 @@ body {
     box-sizing: border-box;
 }
 
-.popup .interno h2, 
+.popup .interno h2,
 .popup .interno h3 {
     text-align: left;
+}
+
+.popup .foto img {
+    cursor: pointer;
+}
+
+.popup .foto img:hover {
+    opacity: 0.8;
 }
 
 .popup .grupo {
@@ -308,6 +316,28 @@ body {
     cursor: pointer;
     margin: 10px;
     border-radius: 50px;
+}
+
+.popup .listaImagem .upload {
+    width: 64px;
+    height: 64px;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 10px;
+    display: inline-block;
+    border-radius: 50px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    cursor: pointer;
+    vertical-align: top;
+}
+
+
+.popup .listaImagem .upload img {
+    width: 24px;
+    height: 24px;
+    margin: 10px;
+    border-radius: initial;
 }
 
 .contexto {
