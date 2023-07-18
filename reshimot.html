@@ -12,6 +12,9 @@
     <!-- sessão de componentes -->
     <div class="components hidden">
 
+        <canvas id="canvas"></canvas>
+        <input type="file" id="uploader" />
+
         <!-- ficha base -->
         <div id="fichaBase">
             <div class="inner" ondblclick="abrirForm('?=id', this)">
@@ -59,8 +62,8 @@
                     <h2>Ficha de personagem</h2>
                 </div>
                 <div class="direita">
-                    <div class="foto">
-                        <img src="default.png" />
+                    <div class="foto" data-id="?=id" data-campo="imagem" data-value="">
+                        <img src="default.png" onclick="escolherImagem()" />
                     </div>
                 </div>
                 <div class="esquerda">
@@ -101,6 +104,12 @@
                     <button onclick="confirmar()" class="confirmar">Confirmar</button>
                     <button onclick="removerFormulario()" class="cancelar">Cancelar</button>
                 </div>
+            </div>
+        </div>
+
+        <div class="formImagens">
+            <div class="interno">
+                <img src="img/">
             </div>
         </div>
 
@@ -165,7 +174,9 @@
     function create() {
         sessao = {
             ultimaFicha: 0,
-            fichas: []
+            ultimaImagem: 0,
+            fichas: [],
+            imagens: []
         }
     }
 
@@ -301,6 +312,10 @@
         campo.value = valor;
     }
 
+    function escolherImagem() {
+
+    }
+
     function compare(a, b) {
 
         if ((a.vida < 1) != (b.vida < 1)) {
@@ -399,9 +414,71 @@
     }
 
     function importar() {
+        let uploader = document.getElementById("uploader");
 
-        document.getElementById("arquivo");
+        uploader.setAttribute("accept", "image/*");
+        uploader.addEventListener("change", (event) => { processarImagem(event) });
+        uploader.click();
+    }
 
+    function processarImagem(e) {
+        let arquivo = e.target.files[0];
+        // let uploader = document.getElementById("uploader");
+        // uploader.removeEventListener("change");
+
+        salvarImagem(arquivo);
+    }
+
+    function salvarImagem(arquivo) {
+        const canvas = document.getElementById('canvas');
+        const contexto = canvas.getContext('2d');
+        const imageURL = URL.createObjectURL(arquivo);
+        const image = new Image();
+
+        image.onload = function () {
+            const size = 64;
+            let largura = image.width;
+            let altura = image.height;
+
+            // redimensiona para o tamanho final
+            if (largura > altura) {
+                largura = size * (largura / altura);
+                altura = size;
+            } else {
+                altura = size * (altura / largura);
+                largura = size;
+            }
+
+            // centraliza a imagem
+            const x = 0 - ((largura - size) / 2);
+            const y = 0 - ((altura - size) / 2);
+
+            canvas.width = size;
+            canvas.height = size;
+
+            contexto.drawImage(image, x, y, largura, altura);
+            URL.revokeObjectURL(imageURL);
+
+            sessao.ultimaImagem++;
+            let url = canvas.toDataURL("image/jpeg");
+            let imagem = {
+                id: sessao.ultimaImagem,
+                url: url
+            }
+
+            sessao.imagens.push(imagem);
+            save();
+        };
+
+        image.src = imageURL;
+    }
+
+    function isPaisagem(altura, largura) {
+        if (largura > altura) {
+            return true;
+        }
+
+        return false;
     }
 
     function edit(id) {
@@ -453,7 +530,6 @@
         if (e.stopPropagation) e.stopPropagation();
     };
 
-    document.addEventListener("change", importar);
     document.addEventListener("click", (event) => { removerContexto(event) });
     document.addEventListener("keydown", (event) => { fecharTudo(event) });
 </script>
