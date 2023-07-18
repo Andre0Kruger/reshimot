@@ -153,7 +153,7 @@
         </div>
     </div>
 </body>
-
+<script src="imglib.js"></script>
 <script>
 
     // localStorage.setItem('sessao', undefined);
@@ -189,7 +189,7 @@
             ultimaFicha: 0,
             ultimaImagem: 0,
             fichas: [],
-            imagens: []
+            imagens: obterPacoteImagem()
         }
     }
 
@@ -216,7 +216,7 @@
         }
 
         if (!sessao.imagens) {
-            sessao.imagens = [];
+            sessao.imagens = obterPacoteImagem();
             save();
         }
 
@@ -637,5 +637,4 @@
     document.addEventListener("click", (event) => { removerContexto(event) });
     document.addEventListener("keydown", (event) => { fecharTudo(event) });
 </script>
-
 </html>
