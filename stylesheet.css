@@ -216,7 +216,8 @@ body {
     box-sizing: border-box;
 }
 
-.popup .interno h2 {
+.popup .interno h2, 
+.popup .interno h3 {
     text-align: left;
 }
 
@@ -296,6 +297,17 @@ body {
 .popup .foto {
     display: block;
     text-align: center;
+}
+
+.popup .listaImagem {
+    text-align: left;
+}
+
+.popup .listaImagem img {
+    display: inline-block;
+    cursor: pointer;
+    margin: 10px;
+    border-radius: 50px;
 }
 
 .contexto {

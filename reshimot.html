@@ -107,9 +107,18 @@
             </div>
         </div>
 
-        <div class="formImagens">
+        <div id="formImagem">
             <div class="interno">
-                <img src="img/">
+                <h3>Escolha uma imagem:</h3>
+
+                <div class="listaImagem">
+                    ?=imagens
+                </div>
+
+                <div class="botoes">
+                    <button onclick="confirmar()" class="confirmar">Confirmar</button>
+                    <button onclick="removerFormulario()" class="cancelar">Cancelar</button>
+                </div>
             </div>
         </div>
 
@@ -313,7 +322,32 @@
     }
 
     function escolherImagem() {
+        let base = document.getElementById("formImagem");
+        let novoPopup = document.createElement("div");
+        let html = base.innerHTML;
+        let listaImagens = "";
 
+        for (const imagem of sessao.imagens) {
+            listaImagens += buildImagem(imagem).outerHTML;
+        }
+
+        html = html.replaceAll("?=imagens", listaImagens);
+        html = html.replaceAll("?=id", "formImagem");
+
+        novoPopup.innerHTML = html;
+        novoPopup.setAttribute("class", "popup");
+        novoPopup.setAttribute("id", "fichaImagem");
+
+        document.body.append(novoPopup);
+    }
+
+    function buildImagem(imagem) {
+        let imagemHTML = document.createElement("img");
+        let fn = "marcarEscolhida(" + imagem.id + ")";
+        imagemHTML.setAttribute("onclick", fn);
+        imagemHTML.setAttribute("src", imagem.url);
+
+        return imagemHTML;
     }
 
     function compare(a, b) {
@@ -401,6 +435,24 @@
         render();
 
         console.log('DELETE: remoção de ficha -> ' + JSON.stringify(ficha));
+    }
+
+    function marcarEscolhida(id) {
+        definirDados('form', 'imagem', id);
+        let imagem = getImagem(id);
+        let campo = document.querySelector('#fichaForm img');
+        campo.setAttribute("src", imagem.url);
+
+        let formImagem = document.getElementById("fichaImagem");
+        formImagem.remove();
+    }
+
+    function getImagem(id) {
+        for (const imagem of sessao.imagens) {
+            if (imagem.id == id) {
+                return imagem;
+            }
+        }
     }
 
     function exportar() {
