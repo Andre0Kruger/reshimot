@@ -22,7 +22,7 @@
                     <div class="ordem">
                         ?=ordem
                     </div>
-                    <div class="menu" onclick="abrirContexto('?=id', this)"></div>
+                    <div class="menu" onclick="abrirContexto('?=id', 'remover', this)"></div>
                 </div>
                 <div class="foto">
                     <img src="default.png" />
@@ -113,8 +113,7 @@
                 <h3>Escolha uma imagem:</h3>
 
                 <div class="listaImagem">
-                    ?=imagens
-                    <span onclick="importarImagem()" class="upload">
+                    <span onclick="importarImagem()" id="?=addImage">
                         <img src="svg/upload.svg" />
                     </span>
                 </div>
@@ -129,7 +128,7 @@
         <div id="contextoBase">
             <ul>
                 <li>Cancelar</li>
-                <li onclick="remover('?=id')">Remover</li>
+                <li data-fn="?=fn('?=id')">Remover</li>
             </ul>
         </div>
     </div>
@@ -363,31 +362,56 @@
         campo.value = valor;
     }
 
+    // --------------------------------------------------------------------------------------------
+    // - formulário de imagens
+    // --------------------------------------------------------------------------------------------
+
     function abrirFormularioImagem() {
         let base = document.getElementById("formImagem");
-        let novoPopup = document.createElement("div");
-        let html = base.innerHTML;
-        let listaImagens = "";
+        let formImagem = document.createElement("div");
 
-        for (const imagem of sessao.imagens) {
-            listaImagens += buildImagem(imagem).outerHTML;
+        formImagem.innerHTML = base.innerHTML.replaceAll("?=addImage", "addImage");
+        formImagem.setAttribute("class", "popup");
+        formImagem.setAttribute("id", "fichaImagem");
+
+        document.body.append(formImagem);
+        renderImages();
+    }
+
+    function removerFormularioImagem() {
+        let formImagem = document.getElementById("fichaImagem");
+        formImagem.remove();
+    }
+
+    function recarregarFormularioImagem() {
+
+        // remove todas as imagens da lista de seleção
+        let imagens = document.getElementsByClassName("imagemItem");
+        while (imagens.length > 0) {
+            imagens[0].remove();
         }
 
-        html = html.replaceAll("?=imagens", listaImagens);
-        html = html.replaceAll("?=id", "formImagem");
+        // renderiza as imagens novamente
+        renderImages();
+    }
 
-        novoPopup.innerHTML = html;
-        novoPopup.setAttribute("class", "popup");
-        novoPopup.setAttribute("id", "fichaImagem");
-
-        document.body.append(novoPopup);
+    function renderImages() {
+        let upload = document.getElementById("addImage");
+        for (const imagem of sessao.imagens) {
+            upload.before(buildImagem(imagem));
+        }
     }
 
     function buildImagem(imagem) {
         let imagemHTML = document.createElement("img");
-        let fn = "marcarEscolhida(" + imagem.id + ")";
-        imagemHTML.setAttribute("onclick", fn);
+
+        let fnEscolher = "marcarEscolhida(" + imagem.id + ")";
+        let fnRemover = "abrirContexto(" + imagem.id + ", 'removerImagem', this)";
+
+        imagemHTML.setAttribute("onclick", fnEscolher);
+        imagemHTML.setAttribute("oncontextmenu", fnRemover);
         imagemHTML.setAttribute("src", imagem.url);
+        imagemHTML.setAttribute("class", "imagemItem");
 
         return imagemHTML;
     }
@@ -421,14 +445,18 @@
         return 0;
     }
 
-    function abrirContexto(id, me) {
-
+    function abrirContexto(id, fn, me) {
         removerContexto();
 
         let base = document.getElementById("contextoBase");
         let contexto = document.createElement("div");
+        let html = base.innerHTML;
 
-        contexto.innerHTML = base.innerHTML.replaceAll("?=id", id);
+        html = html.replaceAll("data-fn", 'onclick');
+        html = html.replaceAll("?=id", id);
+        html = html.replaceAll("?=fn", fn);
+
+        contexto.innerHTML = html;
 
         let top = me.offsetTop + 10;
         let left = me.offsetLeft + 10;
@@ -437,9 +465,6 @@
         contexto.setAttribute("style", "top: " + top + "px; left: " + left + "px");
 
         document.body.append(contexto);
-
-        // console.log(obterDados(id, 'nome'));
-
     }
 
     function abrirForm(id, me) {
@@ -451,6 +476,7 @@
             let form = document.getElementById("fichaForm");
             let imagem = getImagem(ficha.imagem);
             form.innerHTML = form.innerHTML.replace("default.png", imagem.url);
+            definirDados('form', 'imagem', ficha.imagem);
         }
 
         definirDados('form', 'idFicha', ficha.id);
@@ -486,18 +512,32 @@
         console.log('DELETE: remoção de ficha -> ' + JSON.stringify(ficha));
     }
 
+    function removerImagem(id) {
+        let imagem = getImagem(id);
+        sessao.imagens.splice(sessao.imagens.indexOf(imagem), 1);
+
+        save();
+        render();
+        recarregarFormularioImagem();
+
+        // se a imagem removida for a do formulário ela é removida
+        if (obterDados('form', 'imagem') == id) {
+            atribuirImagemFormulario('default');
+        }
+    }
+
     function marcarEscolhida(id) {
         definirDados('form', 'imagem', id);
-        let imagem = getImagem(id);
-        let campo = document.querySelector('#fichaForm img');
-        campo.setAttribute("src", imagem.url);
-
+        atribuirImagemFormulario(id);
         removerFormularioImagem();
     }
 
-    function removerFormularioImagem() {
-        let formImagem = document.getElementById("fichaImagem");
-        formImagem.remove();
+    function atribuirImagemFormulario(id) {
+        let imagem = getImagem(id);
+        let url = imagem ? imagem.url : 'default.png';
+        let imagemHTML = document.querySelector('#fichaForm img');
+
+        imagemHTML.setAttribute("src", url);
     }
 
     function getImagem(id) {
@@ -525,12 +565,7 @@
 
     function processarImagem(e) {
         let arquivo = e.target.files[0];
-
         salvarImagem(arquivo);
-        removerFormularioImagem();
-        setTimeout(() => {
-            abrirFormularioImagem();
-        }, 100);
     }
 
     function salvarImagem(arquivo) {
@@ -572,6 +607,7 @@
 
             sessao.imagens.push(imagem);
             save();
+            recarregarFormularioImagem();
         };
 
         image.src = imageURL;
@@ -634,7 +670,9 @@
         if (e.stopPropagation) e.stopPropagation();
     };
 
+    document.addEventListener('contextmenu', event => event.preventDefault());
     document.addEventListener("click", (event) => { removerContexto(event) });
     document.addEventListener("keydown", (event) => { fecharTudo(event) });
 </script>
+
 </html>
