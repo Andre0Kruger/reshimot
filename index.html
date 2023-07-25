@@ -14,6 +14,7 @@
 
         <canvas id="canvas"></canvas>
         <input type="file" id="uploaderImage" accept="image/*" onchange="processarImagem(event)" />
+        <input type="file" id="uploaderJson" accept=".json" onchange="processarJson(event)" />
 
         <!-- ficha base -->
         <div id="fichaBase">
@@ -139,7 +140,7 @@
         <div class="logo" title="Reshimot"><img src="logo.png" /></div>
         <div class="acoes">
             <button onclick="exportar()" title="Exportar sessão"><img src="svg/export.svg"></button>
-            <button onclick="importarImagem()" title="Importar sessão"><img src="svg/upload.svg"></button>
+            <button onclick="importarSessao()" title="Importar sessão"><img src="svg/upload.svg"></button>
             <button onclick="trocarSessao()" title="Trocar de sessão"><img src="svg/settings.svg"></button>
         </div>
     </div>
@@ -563,6 +564,102 @@
     function importarImagem() {
         let uploader = document.getElementById("uploaderImage");
         uploader.click();
+    }
+
+    function importarSessao() {
+        let uploader = document.getElementById("uploaderJson");
+        uploader.click();
+    }
+
+    function processarJson(e) {
+        let arquivo = e.target.files[0];
+
+        const fileReader = new FileReader();
+        fileReader.onload = function (event) {
+            const conteudo = event.target.result;
+            let sessaoUpload;
+
+            try {
+                sessaoUpload = JSON.parse(conteudo);
+            } catch (e) {
+                alert('O arquivo não é um JSON válido.');
+                return;
+            }
+
+            let jsonValido = true;
+
+            if (validarUpload(sessaoUpload)) {
+                sessao = sessaoUpload;
+                save();
+                render();
+                alert('Sessão carregada com sucesso!');
+            }
+        };
+
+        fileReader.readAsText(arquivo);
+    }
+
+    function validarUpload(sessaoUpload) {
+        if (!sessaoUpload.ultimaFicha) {
+            alert('O JSON não possui o campo numérico "ultimaFicha".');
+            return false;
+        }
+
+        if (isNaN(sessaoUpload.ultimaFicha)) {
+            alert('O campo "ultimaFicha" deve ser do tipo numérico.');
+            return false;
+        }
+
+        if (!sessaoUpload.ultimaImagem) {
+            alert('O JSON não possui o campo numérico "ultimaImagem".');
+            return false;
+        }
+
+        if (isNaN(sessaoUpload.ultimaImagem)) {
+            alert('O campo "ultimaImagem" deve ser do tipo numérico.');
+            return false;
+        }
+
+        if (!sessaoUpload.fichas) {
+            alert('O JSON não possui o campo array "fichas".');
+            return false;
+        }
+
+        if (!Array.isArray(sessaoUpload.fichas)) {
+            alert('O campo "fichas" deve ser do tipo array.');
+            return false;
+        }
+
+        if (!sessaoUpload.imagens) {
+            alert('O JSON não possui o campo array "imagens".');
+            return false;
+        }
+
+        if (!Array.isArray(sessaoUpload.imagens)) {
+            alert('O campo "imagens" deve ser do tipo array.');
+            return false;
+        }
+
+        for (const ficha of sessaoUpload.fichas) {
+            if (!ficha.id) {
+                alert('As fichas no campo "fichas" devem ter o campo "id".');
+                return false;
+            }
+        }
+
+        for (const imagem of sessaoUpload.imagens) {
+            if (!imagem.id) {
+                alert('As imagens no campo "imagens" devem ter o campo "id".');
+                return false;
+            }
+        }
+
+        let msg = "Tudo certo para importação! O processo vai sobreescrever sua sessão atual. Garanta uma cópia de segurança exportando a sessão atual para JSON. \n\n Pressione 'Ok' para continuar com o processo:";
+        if (confirm(msg) == true) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     function processarImagem(e) {
