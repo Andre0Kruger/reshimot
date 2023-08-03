@@ -133,7 +133,7 @@ body {
     content: '';
     width: 12px;
     height: 12px;
-    background-image: url('svg/remove.svg');
+    background-image: url('svg/bars.svg');
     background-repeat: no-repeat;
     background-size: contain;
     display: inline-block;
@@ -212,7 +212,7 @@ body {
     padding: 25px;
     display: inline-block;
     margin-top: 25px;
-    width: 500px;
+    width: 800px;
     box-sizing: border-box;
 }
 
@@ -259,7 +259,7 @@ body {
 
 .popup .anotacao textarea {
     resize: none;
-    height: 125px;
+    height: 250px;
 }
 
 .popup .botoes {
@@ -289,14 +289,14 @@ body {
 
 .popup .esquerda {
     display: inline-block;
-    width: 59%;
+    width: 69%;
     box-sizing: border-box;
     vertical-align: top;
 }
 
 .popup .direita {
     display: inline-block;
-    width: 40%;
+    width: 30%;
     box-sizing: border-box;
     padding-left: 10px;
     vertical-align: top;
