@@ -151,7 +151,7 @@
         </div>
     </div>
 
-    <span class="versao">Projeto Reshimot - v1.3 ALPHA</span>
+    <span class="versao">Projeto Reshimot - v1.4 ALPHA</span>
 </body>
 <script src="imglib.js"></script>
 <script>
@@ -542,7 +542,10 @@
         let ficha = get(id);
         let fichaClonada = { ...ficha };
 
+        sessao.ultimaFicha++;
+        fichaClonada.id = sessao.ultimaFicha;
         sessao.fichas.push(fichaClonada);
+
         save();
         render();
     }
@@ -672,8 +675,32 @@
             }
         }
 
-        let msg = "Tudo certo para importação! O processo vai sobreescrever sua sessão atual. Garanta uma cópia de segurança exportando a sessão atual para JSON. \n\n Pressione 'Ok' para continuar com o processo:";
-        if (confirm(msg) == true) {
+        let integridade = true;
+        if (!validarCorrigirFichas(sessaoUpload)) {
+            if (confirm("Parece que a ficha está com problemas, deseja realizar um reparo antes do upload?")) {
+                validarCorrigirFichas(sessaoUpload, true);
+
+                // fazemos uma nova verificação antes do próximo passo
+                if (!validarCorrigirFichas(sessaoUpload)) {
+                    alert("Parece que ocorreu um erro durante o processo, a continuação do procedimento é desencorajada.");
+                    integridade = false;
+                }
+            } else {
+                integridade = false;
+            }
+        }
+
+        let msg = new StringBuilder();
+        if (integridade) {
+            msg.append("Tudo certo para importação!");
+        } else {
+            msg.append("A ficha contém problemas, prossiga por sua conta e risco.")
+        }
+
+        msg.append(" O processo vai sobreescrever sua sessão atual. Garanta uma cópia de segurança exportando a sessão atual para JSON.");
+        msg.append("\n\n Pressione 'Ok' para continuar com o processo:");
+
+        if (confirm(msg.toString())) {
             return true;
         } else {
             return false;
@@ -782,6 +809,42 @@
         }
     }
 
+    function validarCorrigirFichas(sessaoUpload, reparar) {
+        let ultimoId = 0;
+        let ids = [];
+
+        for (const ficha of sessaoUpload.fichas) {
+            if (ficha.id > ultimoId) {
+                ultimoId = ficha.id;
+            }
+        }
+
+        if (sessaoUpload.ultimaFicha != ultimoId) {
+            if (reparar) {
+                sessaoUpload.ultimaFicha = ultimoId;
+            } else {
+                return false;
+            }
+        }
+
+        for (const ficha of sessaoUpload.fichas) {
+            let id = ficha.id;
+
+            if (ids.indexOf(id) < 0) {
+                ids.push(id);
+            } else {
+                if (reparar) {
+                    sessaoUpload.ultimaFicha++;
+                    ficha.id = sessaoUpload.ultimaFicha;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     function prevent(e) {
         e.cancelBubble = true;
         if (e.stopPropagation) e.stopPropagation();
@@ -790,6 +853,20 @@
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.addEventListener("click", (event) => { removerContexto(event) });
     document.addEventListener("keydown", (event) => { fecharTudo(event) });
+
+    class StringBuilder {
+
+        string = '';
+
+        append(string) {
+            this.string += string;
+        }
+
+        toString() {
+            return this.string;
+        }
+
+    }
 </script>
 
 </html>
