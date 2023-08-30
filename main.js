@@ -100,6 +100,8 @@ function add() {
 
 function abrirFormulario() {
 
+    abrirBack();
+
     let base = document.getElementById("formBase");
     let novoPopup = document.createElement("div");
 
@@ -110,8 +112,26 @@ function abrirFormulario() {
     document.body.append(novoPopup);
 }
 
+function abrirBack(imagem) {
+    let back = document.createElement('div');
+
+    let fn = imagem ? "removerFormularioImagem()" : "removerFormulario()";
+    let classe = imagem ? "imgback" : "back";
+
+    back.setAttribute("class", classe);
+    back.setAttribute("onclick", fn);
+
+    document.body.append(back);
+}
+
 function removerFormulario() {
     document.getElementById("fichaForm").remove();
+
+    let back = document.getElementsByClassName("back");
+
+    while (back.length > 0) {
+        back[0].remove();
+    }
 }
 
 function confirmar() {
@@ -214,6 +234,9 @@ function definirDados(id, nomeCampo, valor) {
 // --------------------------------------------------------------------------------------------
 
 function abrirFormularioImagem() {
+
+    abrirBack(true);
+
     let base = document.getElementById("formImagem");
     let formImagem = document.createElement("div");
 
@@ -228,6 +251,12 @@ function abrirFormularioImagem() {
 function removerFormularioImagem() {
     let formImagem = document.getElementById("fichaImagem");
     formImagem.remove();
+
+    let back = document.getElementsByClassName("imgback");
+
+    while (back.length > 0) {
+        back[0].remove();
+    }
 }
 
 function recarregarFormularioImagem() {
