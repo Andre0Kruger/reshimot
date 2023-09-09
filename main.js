@@ -674,10 +674,16 @@ function processar(id, campo, valor) {
     return retorno || '';
 }
 
-function fecharTudo(e) {
+function atalhosTeclado(e) {
+    let formulario = document.getElementById("fichaForm");
+
     if (e.key === "Escape") {
         removerContexto(e);
-        removerFormulario();
+        formulario && removerFormulario();
+    }
+    
+    if (e.key === "Enter" && e.ctrlKey) {
+        formulario && confirmar();
     }
 }
 
@@ -724,7 +730,7 @@ function prevent(e) {
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 document.addEventListener("click", (event) => { removerContexto(event) });
-document.addEventListener("keydown", (event) => { fecharTudo(event) });
+document.addEventListener("keydown", (event) => { atalhosTeclado(event) });
 
 class StringBuilder {
 
