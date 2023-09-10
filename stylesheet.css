@@ -5,7 +5,8 @@
     user-select: none;
 }
 
-.back, .imgback {
+.back,
+.imgback {
     position: absolute;
     top: 0;
     left: 0;
@@ -92,18 +93,20 @@ body {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-.morte {
+.morte,
+.foracombate {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-.morte img {
+.morte img,
+.foracombate img {
     opacity: 0.3;
 }
 
-.morte .foto::before {
+.morte .foto::before,
+.foracombate .foto::before {
     content: '';
     background-position: 0 0;
-    background-image: url('img/skull.png');
     background-repeat: no-repeat;
     background-size: contain;
     display: inline-block;
@@ -112,6 +115,14 @@ body {
     width: 64px;
     left: 0;
     top: 0;
+}
+
+.morte .foto::before {
+    background-image: url('img/skull.png');
+}
+
+.foracombate .foto::before {
+    background-image: url('img/pause.png');
 }
 
 #add {

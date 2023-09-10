@@ -1,6 +1,15 @@
 
-const FUNCOES_IMAGEM = [{ nome: 'Remover', fn: 'removerImagem' }];
-const FUNCOES_FICHA = [{ nome: 'Duplicar', fn: 'duplicar' }, { nome: 'Remover', fn: 'remover' }];
+const FUNCOES_IMAGEM = [
+    { nome: 'Remover', fn: 'removerImagem' }
+];
+
+const FUNCOES_FICHA = [
+    { nome: 'Duplicar', fn: 'duplicar' },
+    { nome: 'Remover', fn: 'remover' }
+];
+
+const FUNCAO_REMOVER_COMBATE = { nome: 'Remover do combate', fn: 'combate', param: 'false' };
+const FUNCAO_INSERIR_COMBATE = { nome: 'Inserir do combate', fn: 'combate', param: 'true' };
 
 // localStorage.setItem('sessao', undefined);
 
@@ -189,8 +198,9 @@ function buildFicha(ficha, index) {
 
     if (ficha.vida < 1) {
         novaFichaHTML.classList.add('morte');
+    } else if (!ficha.combate) {
+        novaFichaHTML.classList.add('foracombate');
     }
-
     novaFichaHTML.innerHTML = html;
     return novaFichaHTML;
 }
@@ -294,6 +304,14 @@ function buildImagem(imagem) {
 
 function compare(a, b) {
 
+    if (a.combate != b.combate) {
+        if (b.combate) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
     if ((a.vida < 1) != (b.vida < 1)) {
         if (a.vida < 1) {
             return 1;
@@ -322,11 +340,19 @@ function compare(a, b) {
 }
 
 function abrirContexto(id, lista, me) {
+    let isFicha = lista !== "imagem";
     removerContexto();
 
-    let funcoes = FUNCOES_FICHA;
-    if (lista == 'imagem') {
-        funcoes = FUNCOES_IMAGEM;
+    let funcoes = [...FUNCOES_IMAGEM];
+    if (isFicha) {
+        funcoes = [...FUNCOES_FICHA];
+
+        let fichaHTML = document.getElementById('ficha_' + id);
+        if (fichaHTML.classList.contains('foracombate')) {
+            funcoes.push(FUNCAO_INSERIR_COMBATE);
+        } else {
+            funcoes.push(FUNCAO_REMOVER_COMBATE);
+        }
     }
 
     let base = document.getElementById("contextoBase");
@@ -336,7 +362,12 @@ function abrirContexto(id, lista, me) {
 
     for (const func of funcoes) {
         let li = document.createElement('li');
-        li.setAttribute('onclick', func.fn + '(' + id + ')');
+        let param = id;
+        if (func.param) {
+            param += ', ' + func.param;
+        }
+
+        li.setAttribute('onclick', func.fn + '(' + param + ')');
         li.innerText = func.nome;
 
         contexto.children[0].append(li);
@@ -349,6 +380,14 @@ function abrirContexto(id, lista, me) {
     contexto.setAttribute("style", "top: " + top + "px; left: " + left + "px");
 
     document.body.append(contexto);
+}
+
+function combate(id, acao) {
+    let ficha = get(id);
+
+    ficha.combate = acao;
+    save();
+    render();
 }
 
 function abrirForm(id, me) {
@@ -681,7 +720,7 @@ function atalhosTeclado(e) {
         removerContexto(e);
         formulario && removerFormulario();
     }
-    
+
     if (e.key === "Enter" && e.ctrlKey) {
         formulario && confirmar();
     }
