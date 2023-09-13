@@ -15,6 +15,8 @@ const FUNCAO_INSERIR_COMBATE = { nome: 'Inserir do combate', fn: 'combate', para
 
 var sessao;
 var estilizarAlinhamento = true;
+var ocultarMortos = false;
+var ocultarForaCombate = false;
 
 load();
 
@@ -24,6 +26,7 @@ function load() {
     if (session && session != "undefined") {
         sessao = JSON.parse(session);
         validarSessao();
+        carregarConfiguracoes();
         render();
     } else {
         create();
@@ -79,6 +82,25 @@ function validarSessao() {
     if (!sessao.ultimaImagem) {
         sessao.ultimaImagem = 0;
         save();
+    }
+}
+
+function carregarConfiguracoes() {
+    let configuracoes = sessao.configuracoes;
+    if (!configuracoes) {
+        return;
+    }
+
+    if (configuracoes.ocultarMortos !== undefined) {
+        ocultarMortos = configuracoes.ocultarMortos;
+    }
+    
+    if (configuracoes.ocultarForaCombate !== undefined) {
+        ocultarForaCombate = configuracoes.ocultarForaCombate;
+    }
+
+    if (configuracoes.estilizarAlinhamento !== undefined) {
+        estilizarAlinhamento = configuracoes.estilizarAlinhamento;
     }
 }
 
@@ -204,8 +226,14 @@ function buildFicha(ficha, index) {
 
     if (ficha.vida < 1) {
         novaFichaHTML.classList.add('morte');
+        if (ocultarMortos) {
+            novaFichaHTML.classList.add('hidden');
+        }
     } else if (!ficha.combate) {
         novaFichaHTML.classList.add('foracombate');
+        if (ocultarForaCombate) {
+            novaFichaHTML.classList.add('hidden');
+        }
     }
     novaFichaHTML.innerHTML = html;
     return novaFichaHTML;
@@ -531,6 +559,7 @@ function processarJson(e) {
         if (validarUpload(sessaoUpload)) {
             sessao = sessaoUpload;
             save();
+            carregarConfiguracoes();
             render();
             alert('Sessão carregada com sucesso!');
         }

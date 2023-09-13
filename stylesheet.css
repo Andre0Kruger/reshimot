@@ -410,3 +410,7 @@ input::-webkit-inner-spin-button {
     color: #999;
     font-size: 11px;
 }
+
+.hidden {
+    display: none !important;
+}
