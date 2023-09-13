@@ -14,6 +14,7 @@ const FUNCAO_INSERIR_COMBATE = { nome: 'Inserir do combate', fn: 'combate', para
 // localStorage.setItem('sessao', undefined);
 
 var sessao;
+var estilizarAlinhamento = true;
 
 load();
 
@@ -155,6 +156,7 @@ function confirmar() {
         fichaSessao.extra = ficha.extra;
         fichaSessao.armadura = ficha.armadura;
         fichaSessao.anotacao = ficha.anotacao;
+        fichaSessao.alinhamento = ficha.alinhamento;
 
         if (getImagem(ficha.imagem)) {
             fichaSessao.imagem = ficha.imagem;
@@ -196,6 +198,10 @@ function buildFicha(ficha, index) {
         html = html.replaceAll("default.png", imagem.url);
     }
 
+    if (ficha.alinhamento && estilizarAlinhamento) {
+        novaFichaHTML.classList.add(ficha.alinhamento);
+    }
+
     if (ficha.vida < 1) {
         novaFichaHTML.classList.add('morte');
     } else if (!ficha.combate) {
@@ -214,7 +220,8 @@ function obterDadosFormulario() {
         vida: obterDados('form', 'vida'),
         armadura: obterDados('form', 'armadura'),
         anotacao: obterDados('form', 'anotacao'),
-        imagem: obterDados('form', 'imagem')
+        imagem: obterDados('form', 'imagem'),
+        alinhamento: obterDados('form', 'alinhamento')
     }
 
     return ficha;
@@ -409,6 +416,7 @@ function abrirForm(id, me) {
     definirDados('form', 'vida', ficha.vida);
     definirDados('form', 'armadura', ficha.armadura);
     definirDados('form', 'anotacao', ficha.anotacao);
+    definirDados('form', 'alinhamento', ficha.alinhamento)
 
 }
 

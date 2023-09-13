@@ -181,6 +181,14 @@ body {
     margin-bottom: 10px;
 }
 
+.bom .nome {
+    color: rgb(137, 202, 137);
+}
+
+.mau .nome {
+    color: rgb(200, 115, 115);
+}
+
 .numeros .grupo {
     display: inline-block;
     text-align: left;
@@ -262,6 +270,7 @@ body {
 }
 
 .popup .grupo input,
+.popup .grupo select,
 .popup .anotacao textarea {
     border-radius: 3px;
     margin-bottom: 10px;
@@ -271,7 +280,12 @@ body {
     outline: none;
     box-sizing: border-box;
     color: #DDD;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #585858;
+}
+
+.popup .grupo select {
+    border-right: 5px solid #585858;
+    cursor: pointer;
 }
 
 .popup .anotacao textarea {
