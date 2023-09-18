@@ -235,6 +235,9 @@ function buildFicha(ficha, index) {
             novaFichaHTML.classList.add('hidden');
         }
     }
+
+    novaFichaHTML.setAttribute('oncontextmenu', 'marcar(' + ficha.id + ')');
+
     novaFichaHTML.innerHTML = html;
     return novaFichaHTML;
 }
@@ -519,14 +522,64 @@ function getImagem(id) {
     }
 }
 
-function exportar() {
+function exportar(apenasMarcados) {
+    let sessaoExportacao;
+    if (apenasMarcados) {
+        sessaoExportacao = obterMarcados();
+    } else {
+        sessaoExportacao = sessao;
+    }
+
+    debugger
+
+    if (sessaoExportacao.fichas.length == 0) {
+        alert("Nenhuma ficha foi encontrada.")
+        return;
+    }
+
     let nome = "backup_" + new Date().getTime();
-    let json = JSON.stringify(sessao);
     let link = document.createElement('a');
+    let json = JSON.stringify(sessaoExportacao);
 
     link.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(json));
     link.setAttribute('download', nome + '.json');
     link.click();
+}
+
+function marcar(id) {
+    let fichaHTML = document.getElementById('ficha_' + id);
+    fichaHTML.classList.toggle('marcado');
+}
+
+function obterMarcados() {
+    let fichasHTML = document.getElementsByClassName('marcado');
+    let imagens = [];
+    let fichas = [];
+
+    for (const fichaHTML of fichasHTML) {
+        let id = fichaHTML.getAttribute('id').replace('ficha_', '');
+        let ficha = get(id);
+        if (!ficha) {
+            continue;
+        }
+
+        fichas.push(ficha);
+        
+        let imagem = getImagem(ficha.imagem);
+        if (!imagem) {
+            continue;
+        }
+
+        imagens.push(imagem);
+    }
+
+    return {
+        ultimaFicha: sessao.ultimaFicha,
+        ultimaImagem: sessao.ultimaImagem,
+        configuracoes: sessao.configuracoes,
+        fichas: fichas,
+        imagens: imagens
+    }
 }
 
 function importarImagem() {

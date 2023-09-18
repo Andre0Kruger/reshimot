@@ -414,3 +414,7 @@ input::-webkit-inner-spin-button {
 .hidden {
     display: none !important;
 }
+
+.marcado {
+    outline: solid 2px #b887da;
+}
