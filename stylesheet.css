@@ -298,7 +298,8 @@ body {
     text-align: left;
 }
 
-.popup .botoes button {
+.popup .botoes button,
+.confirmacao button {
     border: none;
     outline: none;
     padding: 10px 15px 8px;
@@ -309,11 +310,11 @@ body {
     line-height: normal;
 }
 
-.popup .botoes .confirmar {
+.confirmar {
     background-color: #0075d3;
 }
 
-.popup .botoes .cancelar {
+.cancelar {
     background-color: #2c2c2c;
     color: #ccc;
 }
@@ -417,4 +418,25 @@ input::-webkit-inner-spin-button {
 
 .marcado {
     outline: solid 2px #b887da;
+}
+
+
+.confirmacao {
+    position: absolute;
+    top: 100px;
+    left: calc(50% - 250px);
+    width: 500px;
+    box-sizing: border-box;
+    background: #585858;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.confirmacao p {
+    margin: 10px 3px;
+    font-weight: 400;
+}
+
+.confirmacao button {
+    margin: 3px;
 }

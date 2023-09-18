@@ -11,6 +11,10 @@ const FUNCOES_FICHA = [
 const FUNCAO_REMOVER_COMBATE = { nome: 'Remover do combate', fn: 'combate', param: 'false' };
 const FUNCAO_INSERIR_COMBATE = { nome: 'Inserir do combate', fn: 'combate', param: 'true' };
 
+const FORMULARIO = 'form';
+const IMAGEM = 'img';
+const CONFIRMACAO = 'conf';
+
 // localStorage.setItem('sessao', undefined);
 
 var sessao;
@@ -94,7 +98,7 @@ function carregarConfiguracoes() {
     if (configuracoes.ocultarMortos !== undefined) {
         ocultarMortos = configuracoes.ocultarMortos;
     }
-    
+
     if (configuracoes.ocultarForaCombate !== undefined) {
         ocultarForaCombate = configuracoes.ocultarForaCombate;
     }
@@ -132,7 +136,7 @@ function add() {
 
 function abrirFormulario() {
 
-    abrirBack();
+    abrirBack(FORMULARIO);
 
     let base = document.getElementById("formBase");
     let novoPopup = document.createElement("div");
@@ -144,11 +148,21 @@ function abrirFormulario() {
     document.body.append(novoPopup);
 }
 
-function abrirBack(imagem) {
+function abrirBack(tipo) {
     let back = document.createElement('div');
+    let fn;
+    let classe;
 
-    let fn = imagem ? "removerFormularioImagem()" : "removerFormulario()";
-    let classe = imagem ? "imgback" : "back";
+    if (tipo === CONFIRMACAO) {
+        fn = "removerConfirmacao()";
+        classe = "back";
+    } else if (tipo === IMAGEM) {
+        fn = "removerFormularioImagem()";
+        classe = "imgback";
+    } else if (tipo === FORMULARIO) {
+        fn = "removerFormulario()";
+        classe = "back";
+    }
 
     back.setAttribute("class", classe);
     back.setAttribute("onclick", fn);
@@ -161,6 +175,18 @@ function removerFormulario() {
 
     let back = document.getElementsByClassName("back");
 
+    while (back.length > 0) {
+        back[0].remove();
+    }
+}
+
+function removerConfirmacao() {
+    let confirmacao = document.getElementsByClassName("confirmacao")
+    while (confirmacao.length > 0) {
+        confirmacao[0].remove();
+    }
+
+    let back = document.getElementsByClassName("back");
     while (back.length > 0) {
         back[0].remove();
     }
@@ -283,7 +309,7 @@ function definirDados(id, nomeCampo, valor) {
 
 function abrirFormularioImagem() {
 
-    abrirBack(true);
+    abrirBack(IMAGEM);
 
     let base = document.getElementById("formImagem");
     let formImagem = document.createElement("div");
@@ -522,15 +548,27 @@ function getImagem(id) {
     }
 }
 
-function exportar(apenasMarcados) {
+function exportar() {
+    let botoes = [{
+        texto: 'Sessão completa', fn: 'exportarSessao(false)', classe: 'confirmar'
+    }, {
+        texto: 'Apenas personagens marcados', fn: 'exportarSessao(true)', classe: 'confirmar'
+    }, {
+        texto: 'Cancelar', fn: 'removerConfirmacao()', classe: 'cancelar'
+    }];
+
+    confirmacao('Este processo irá exportar as fichas da sessão. Que tipo de exportação você deseja fazer?', botoes);
+}
+
+function exportarSessao(apenasMarcados) {
+    removerConfirmacao();
+
     let sessaoExportacao;
     if (apenasMarcados) {
         sessaoExportacao = obterMarcados();
     } else {
         sessaoExportacao = sessao;
     }
-
-    debugger
 
     if (sessaoExportacao.fichas.length == 0) {
         alert("Nenhuma ficha foi encontrada.")
@@ -564,7 +602,7 @@ function obterMarcados() {
         }
 
         fichas.push(ficha);
-        
+
         let imagem = getImagem(ficha.imagem);
         if (!imagem) {
             continue;
@@ -619,6 +657,31 @@ function processarJson(e) {
     };
 
     fileReader.readAsText(arquivo);
+}
+
+function confirmacao(mensagem, botoes) {
+    let p = document.createElement('p');
+    p.innerText = mensagem;
+
+    let modalHTML = document.createElement('div');
+    modalHTML.setAttribute('class', 'confirmacao');
+    modalHTML.append(p);
+
+    for (const botao of botoes) {
+        let button = document.createElement('button');
+
+        if (botao.classe) {
+            button.setAttribute('class', botao.classe);
+        }
+
+        button.innerText = botao.texto;
+        button.setAttribute('onclick', botao.fn);
+
+        modalHTML.append(button);
+    }
+
+    abrirBack(CONFIRMACAO);
+    document.body.append(modalHTML);
 }
 
 function validarUpload(sessaoUpload) {
