@@ -628,6 +628,8 @@ function importarImagem() {
 
 function importarSessao() {
     let uploader = document.getElementById("uploaderJson");
+    uploader.value = '';
+
     uploader.click();
 }
 
