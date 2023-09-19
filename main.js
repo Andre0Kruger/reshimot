@@ -18,6 +18,7 @@ const CONFIRMACAO = 'conf';
 // localStorage.setItem('sessao', undefined);
 
 var sessao;
+var sessaoImportacao;
 var estilizarAlinhamento = true;
 var ocultarMortos = false;
 var ocultarForaCombate = false;
@@ -571,7 +572,7 @@ function exportarSessao(apenasMarcados) {
     }
 
     if (sessaoExportacao.fichas.length == 0) {
-        alert("Nenhuma ficha foi encontrada.")
+        alerta("Nenhuma ficha foi encontrada.")
         return;
     }
 
@@ -641,25 +642,95 @@ function processarJson(e) {
         try {
             sessaoUpload = JSON.parse(conteudo);
         } catch (e) {
-            alert('O arquivo não é um JSON válido.');
+            alerta('O arquivo não é um JSON válido.');
             return;
         }
 
-        let jsonValido = true;
-
         if (validarUpload(sessaoUpload)) {
-            sessao = sessaoUpload;
-            save();
-            carregarConfiguracoes();
-            render();
-            alert('Sessão carregada com sucesso!');
+            sessaoImportacao = sessaoUpload;
+
+            let botoes = [{
+                texto: 'Sobrescrever sessão', fn: 'importarCompleto()', classe: 'confirmar'
+            }, {
+                texto: 'Importar a sessão existente', fn: 'importarExistente()', classe: 'confirmar'
+            }, {
+                texto: 'Cancelar', fn: 'removerConfirmacao()', classe: 'cancelar'
+            }];
+
+            confirmacao('O processo vai reescrever sua sessão atual.\nGaranta uma cópia de segurança exportando a sessão atual para JSON. Escolha uma opção para continuar:', botoes);
         }
     };
 
     fileReader.readAsText(arquivo);
 }
 
-function confirmacao(mensagem, botoes) {
+function importarCompleto() {
+    sessao = sessaoImportacao;
+    save();
+    carregarConfiguracoes();
+    render();
+    alerta('Sessão carregada com sucesso!');
+}
+
+function importarExistente() {
+
+    let imagensImportacao = sessaoImportacao.imagens;
+    let imagens = sessao.imagens;
+
+    let fichasImportacao = sessaoImportacao.fichas;
+    let fichas = sessao.fichas;
+
+    let ultimaImagem = sessao.ultimaImagem;
+    let ultimaFicha = sessao.ultimaFicha;
+
+    for (const imagem of imagensImportacao) {
+        let idAntigo = imagem.id;
+        let idNovo;
+
+        for (const img of imagens) {
+            if (imagem.url == img.url) {
+                idNovo = img.id;
+                break;
+            }
+        }
+
+        if (!idNovo) {
+            ultimaImagem++;
+            idNovo = ultimaImagem;
+            imagens.push({ id: idNovo, url: imagem.url });
+        }
+
+        for (const ficha of fichasImportacao) {
+            if (ficha.imagem == idAntigo) {
+                ficha.imagem = idNovo;
+            }
+        }
+    }
+
+    for (const ficha of fichasImportacao) {
+        ultimaFicha++;
+        ficha.id = ultimaFicha;
+        fichas.push(ficha);
+    }
+
+    sessao.ultimaFicha = ultimaFicha;
+    sessao.ultimaImagem = ultimaImagem;
+
+    save();
+    carregarConfiguracoes();
+    render();
+    alerta('Sessão carregada com sucesso!');
+}
+
+function alerta(mensagem) {
+    confirmacao(mensagem, [{ texto: 'Ok', fn: 'removerConfirmacao()', classe: 'confirmar' }])
+}
+
+function confirmacao(mensagem, botoes, manterConfirmacao) {
+    if (!manterConfirmacao) {
+        removerConfirmacao();
+    }
+
     let p = document.createElement('p');
     p.innerText = mensagem;
 
@@ -686,89 +757,61 @@ function confirmacao(mensagem, botoes) {
 
 function validarUpload(sessaoUpload) {
     if (!sessaoUpload.ultimaFicha && sessaoUpload.ultimaFicha != 0) {
-        alert('O JSON não possui o campo numérico "ultimaFicha".');
+        alerta('O JSON não possui o campo numérico "ultimaFicha".');
         return false;
     }
 
     if (isNaN(sessaoUpload.ultimaFicha)) {
-        alert('O campo "ultimaFicha" deve ser do tipo numérico.');
+        alerta('O campo "ultimaFicha" deve ser do tipo numérico.');
         return false;
     }
 
     if (!sessaoUpload.ultimaImagem && sessaoUpload.ultimaImagem != 0) {
-        alert('O JSON não possui o campo numérico "ultimaImagem".');
+        alerta('O JSON não possui o campo numérico "ultimaImagem".');
         return false;
     }
 
     if (isNaN(sessaoUpload.ultimaImagem)) {
-        alert('O campo "ultimaImagem" deve ser do tipo numérico.');
+        alerta('O campo "ultimaImagem" deve ser do tipo numérico.');
         return false;
     }
 
     if (!sessaoUpload.fichas) {
-        alert('O JSON não possui o campo array "fichas".');
+        alerta('O JSON não possui o campo array "fichas".');
         return false;
     }
 
     if (!Array.isArray(sessaoUpload.fichas)) {
-        alert('O campo "fichas" deve ser do tipo array.');
+        alerta('O campo "fichas" deve ser do tipo array.');
         return false;
     }
 
     if (!sessaoUpload.imagens) {
-        alert('O JSON não possui o campo array "imagens".');
+        alerta('O JSON não possui o campo array "imagens".');
         return false;
     }
 
     if (!Array.isArray(sessaoUpload.imagens)) {
-        alert('O campo "imagens" deve ser do tipo array.');
+        alerta('O campo "imagens" deve ser do tipo array.');
         return false;
     }
 
     for (const ficha of sessaoUpload.fichas) {
         if (!ficha.id) {
-            alert('As fichas no campo "fichas" devem ter o campo "id".');
+            alerta('As fichas no campo "fichas" devem ter o campo "id".');
             return false;
         }
     }
 
     for (const imagem of sessaoUpload.imagens) {
         if (!imagem.id) {
-            alert('As imagens no campo "imagens" devem ter o campo "id".');
+            alerta('As imagens no campo "imagens" devem ter o campo "id".');
             return false;
         }
     }
 
-    let integridade = true;
-    if (!validarCorrigirFichas(sessaoUpload)) {
-        if (confirm("Parece que a ficha está com problemas, deseja realizar um reparo antes do upload?")) {
-            validarCorrigirFichas(sessaoUpload, true);
-
-            // fazemos uma nova verificação antes do próximo passo
-            if (!validarCorrigirFichas(sessaoUpload)) {
-                alert("Parece que ocorreu um erro durante o processo, a continuação do procedimento é desencorajada.");
-                integridade = false;
-            }
-        } else {
-            integridade = false;
-        }
-    }
-
-    let msg = new StringBuilder();
-    if (integridade) {
-        msg.append("Tudo certo para importação!");
-    } else {
-        msg.append("A ficha contém problemas, prossiga por sua conta e risco.")
-    }
-
-    msg.append(" O processo vai sobreescrever sua sessão atual. Garanta uma cópia de segurança exportando a sessão atual para JSON.");
-    msg.append("\n\n Pressione 'Ok' para continuar com o processo:");
-
-    if (confirm(msg.toString())) {
-        return true;
-    } else {
-        return false;
-    }
+    corrigirSessao(sessaoUpload);
+    return true;
 }
 
 function processarImagem(e) {
@@ -879,40 +922,29 @@ function atalhosTeclado(e) {
     }
 }
 
-function validarCorrigirFichas(sessaoUpload, reparar) {
-    let ultimoId = 0;
-    let ids = [];
+function corrigirSessao(sessaoUpload) {
+    let ultimaFicha = 0;
+    let ultimaImagem = 0;
 
     for (const ficha of sessaoUpload.fichas) {
-        if (ficha.id > ultimoId) {
-            ultimoId = ficha.id;
+        if (ficha.id > ultimaFicha) {
+            ultimaFicha = ficha.id;
         }
     }
 
-    if (sessaoUpload.ultimaFicha != ultimoId) {
-        if (reparar) {
-            sessaoUpload.ultimaFicha = ultimoId;
-        } else {
-            return false;
+    if (sessaoUpload.ultimaFicha < ultimaFicha) {
+        sessaoUpload.ultimaFicha = ultimaFicha;
+    }
+
+    for (const imagem of sessaoUpload.imagens) {
+        if (imagem.id > ultimaImagem) {
+            ultimaImagem = imagem.id;
         }
     }
 
-    for (const ficha of sessaoUpload.fichas) {
-        let id = ficha.id;
-
-        if (ids.indexOf(id) < 0) {
-            ids.push(id);
-        } else {
-            if (reparar) {
-                sessaoUpload.ultimaFicha++;
-                ficha.id = sessaoUpload.ultimaFicha;
-            } else {
-                return false;
-            }
-        }
+    if (sessaoUpload.ultimaImagem < ultimaImagem) {
+        sessaoUpload.ultimaImagem = ultimaImagem;
     }
-
-    return true;
 }
 
 function prevent(e) {
