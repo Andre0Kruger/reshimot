@@ -248,7 +248,10 @@ function buildFicha(ficha, index) {
     }
 
     if (ficha.alinhamento && estilizarAlinhamento) {
-        novaFichaHTML.classList.add(ficha.alinhamento);
+        let alinhamentos = ['bom', 'mau', 'neutro']
+        if (alinhamentos.indexOf(ficha.alinhamento) >= 0) {
+            novaFichaHTML.classList.add(ficha.alinhamento);
+        }
     }
 
     if (ficha.vida < 1) {
