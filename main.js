@@ -264,6 +264,7 @@ function buildFicha(ficha, index) {
     }
 
     novaFichaHTML.setAttribute('oncontextmenu', 'marcar(' + ficha.id + ')');
+    novaFichaHTML.setAttribute('title', ficha.anotacao);
 
     novaFichaHTML.innerHTML = html;
     return novaFichaHTML;
